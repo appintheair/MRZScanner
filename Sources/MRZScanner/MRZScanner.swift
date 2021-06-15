@@ -18,6 +18,7 @@ public class MRZScanner {
     private let mrzTracker = StringTracker()
     private let mrzParser = MRZParser(ocrCorrection: true)
     public weak var delegate: MRZScannerDelegate?
+    private var isScanning = false
 
     public init() {
         request = .init(completionHandler: { [weak self] request, error in
@@ -48,15 +49,18 @@ public class MRZScanner {
                 self.delegate?.mrzScanner(self, didReciveResult: result)
                 self.mrzTracker.reset(string: sureNumber)
             }
+
+            self.isScanning = false
         })
     }
 
     public func scanImage(image: CGImage) {
         let imageRequestHandler = VNImageRequestHandler(cgImage: image, orientation: .right, options: [:])
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self, !self.isScanning else { return }
             do {
                 try imageRequestHandler.perform([self.request])
+                self.isScanning = true
             } catch let error {
                 self.delegate?.mrzScanner(self, didReciveError: error)
             }

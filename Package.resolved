@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "MRZParser",
+        "repositoryURL": "git@github.com:romanmazeev/MRZParser.git",
+        "state": {
+          "branch": null,
+          "revision": "c95b7b23ca0c4698c6e7e6a43b6aa61a9957ce0d",
+          "version": "0.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

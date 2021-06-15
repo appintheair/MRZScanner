@@ -19,7 +19,7 @@ public class MRZScanner {
     private let mrzParser = MRZParser(ocrCorrection: true)
     public weak var delegate: MRZScannerDelegate?
 
-    init() {
+    public init() {
         request = .init(completionHandler: { [weak self] request, error in
             guard let self = self else { return }
             var codes = [String]()

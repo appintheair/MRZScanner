@@ -54,9 +54,9 @@ public class MRZScanner {
         })
     }
 
-    public func scanImage(image: CGImage) {
+    public func scan(pixelBuffer: CVPixelBuffer) {
         guard !self.isScanning else { return }
-        let imageRequestHandler = VNImageRequestHandler(cgImage: image, orientation: .up, options: [:])
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
             do {

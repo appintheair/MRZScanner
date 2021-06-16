@@ -9,9 +9,8 @@ import Vision
 import MRZParser
 
 public protocol MRZScannerDelegate: AnyObject {
-    func mrzScanner(_ scanner: MRZScanner, didReciveResult result: MRZResult)
+    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<MRZResult, Error>)
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: (invalid: [CGRect], valid: [CGRect]))
-    func mrzScanner(_ scanner: MRZScanner, didReciveError error: Error)
 }
 
 public class MRZScanner {
@@ -55,7 +54,7 @@ public class MRZScanner {
             if let sureNumber = self.tracker.getStableString(),
                let result = self.parser.parse(mrzString: sureNumber),
                result.allCheckDigitsValid {
-                self.delegate?.mrzScanner(self, didReciveResult: result)
+                self.delegate?.mrzScanner(self, didFinishWith: .success(result))
                 self.tracker.reset(string: sureNumber)
             }
         })
@@ -82,8 +81,8 @@ public class MRZScanner {
 
             do {
                 try imageRequestHandler.perform([self.request])
-            } catch let error {
-                self.delegate?.mrzScanner(self, didReciveError: error)
+            } catch {
+                self.delegate?.mrzScanner(self, didFinishWith: .failure(error))
             }
         }
     }

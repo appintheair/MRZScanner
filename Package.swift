@@ -12,7 +12,7 @@ let package = Package(
             targets: ["MRZScanner"]),
     ],
     dependencies: [
-        .package(url: "git@github.com:romanmazeev/MRZParser.git", from: "0.0.1")
+        .package(url: "git@github.com:romanmazeev/MRZParser.git", .branch("main"))
     ],
     targets: [
         .target(

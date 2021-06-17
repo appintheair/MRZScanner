@@ -47,7 +47,7 @@ public class MRZScanner {
             }
 
             // Log any found numbers.
-            self.tracker.logFrame(strings: codes)
+            self.tracker.logFrame(string: codes.joined(separator: "\n"))
             self.delegate?.mrzScanner(self, didFindBoundingRects: (invalid: invalidRects, valid: validRects))
 
             // Check if we have any temporally stable numbers.

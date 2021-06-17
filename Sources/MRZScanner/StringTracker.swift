@@ -17,15 +17,12 @@ class StringTracker {
     private var bestCount = Int64(0)
     private var bestString = ""
 
-    func logFrame(strings: [String]) {
-        for string in strings {
-            if seenStrings[string] == nil {
-                seenStrings[string] = (lastSeen: Int64(0), count: Int64(-1))
-            }
-            seenStrings[string]?.lastSeen = frameIndex
-            seenStrings[string]?.count += 1
-            print("Seen \(string) \(seenStrings[string]?.count ?? 0) times")
+    func logFrame(string: String) {
+        if seenStrings[string] == nil {
+            seenStrings[string] = (lastSeen: Int64(0), count: Int64(-1))
         }
+        seenStrings[string]?.lastSeen = frameIndex
+        seenStrings[string]?.count += 1
 
         var obsoleteStrings = [String]()
 

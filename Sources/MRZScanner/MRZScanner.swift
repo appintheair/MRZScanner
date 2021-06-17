@@ -46,17 +46,21 @@ public class MRZScanner {
                 }
             }
 
-            self.delegate?.mrzScanner(self, didFindBoundingRects: (invalid: invalidRects, valid: validRects))
+            DispatchQueue.main.async {
+                self.delegate?.mrzScanner(self, didFindBoundingRects: (invalid: invalidRects, valid: validRects))
+            }
 
             // Log any found numbers.
             if [TD1.linesCount, TD2.linesCount, TD3.linesCount].contains(codes.count) {
                 self.tracker.logFrame(string: codes.joined(separator: "\n"))
-
+                
                 // Check if we have any temporally stable numbers.
                 if let sureNumber = self.tracker.getStableString(),
                    let result = self.parser.parse(mrzString: sureNumber),
                    result.allCheckDigitsValid {
-                    self.delegate?.mrzScanner(self, didFinishWith: .success(result))
+                    DispatchQueue.main.async {
+                        self.delegate?.mrzScanner(self, didFinishWith: .success(result))
+                    }
                     self.tracker.reset(string: sureNumber)
                 }
             }

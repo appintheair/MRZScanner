@@ -55,7 +55,7 @@ public class MRZScanner {
                 self.tracker.logFrame(string: codes.joined(separator: "\n"))
                 
                 // Check if we have any temporally stable numbers.
-                if let sureNumber = self.tracker.getStableString(),
+                if let sureNumber = self.tracker.stableString,
                    let result = self.parser.parse(mrzString: sureNumber),
                    result.allCheckDigitsValid {
                     DispatchQueue.main.async {

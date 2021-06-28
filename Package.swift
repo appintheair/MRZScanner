@@ -9,7 +9,8 @@ let package = Package(
     products: [
         .library(
             name: "MRZScanner",
-            targets: ["MRZScanner"]),
+            targets: ["MRZScanner"]
+        ),
     ],
     dependencies: [
         .package(url: "git@github.com:romanmazeev/MRZParser.git", .branch("main"))
@@ -17,9 +18,7 @@ let package = Package(
     targets: [
         .target(
             name: "MRZScanner",
-            dependencies: ["MRZParser"]),
-        .testTarget(
-            name: "MRZScannerTests",
-            dependencies: ["MRZScanner", "MRZParser"]),
+            dependencies: ["MRZParser"]
+        )
     ]
 )

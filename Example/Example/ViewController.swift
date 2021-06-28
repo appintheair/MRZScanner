@@ -10,18 +10,22 @@ import AVFoundation
 import MRZScanner
 
 class ViewController: UIViewController {
-    // MARK: - UI objects
+    // MARK: UI objects
     private let previewView = PreviewView()
     private let cutoutView = UIView()
     private let maskLayer = CAShapeLayer()
-    private var resultAlertIsPresented = false
-
-    /// Device orientation. Updated whenever the orientation changes to a different supported orientation.
-    private var currentOrientation = UIDeviceOrientation.portrait
 
     private let scanner = MRZScanner()
+    private var resultAlertIsPresented = false
 
-    // MARK: - Capture related objects
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
+    // MARK: Capture related objects
     private let captureSession = AVCaptureSession()
     private let captureSessionQueue = DispatchQueue(label: "com.aita.mrzExample.captureSessionQueue")
 
@@ -30,14 +34,17 @@ class ViewController: UIViewController {
     private let videoDataOutput = AVCaptureVideoDataOutput()
     private let videoDataOutputQueue = DispatchQueue(label: "com.aita.mrzExample.videoDataOutputQueue")
 
-    // MARK: - Region of interest (ROI) and text orientation
+    /// Device orientation. Updated whenever the orientation changes to a different supported orientation.
+    private var currentOrientation = UIDeviceOrientation.portrait
+
+    // MARK: Region of interest (ROI) and text orientation
     // Region of video data output buffer that recognition should be run on.
     // Gets recalculated once the bounds of the preview layer are known.
     var regionOfInterest = CGRect(x: 0, y: 0, width: 1, height: 1)
     // Orientation of text to search for in the region of interest.
     var textOrientation = CGImagePropertyOrientation.up
 
-    // MARK: - Coordinate transforms
+    // MARK: Coordinate transforms
     var bufferAspectRatio: Double!
     // Transform from UI orientation to buffer orientation.
     var uiRotationTransform = CGAffineTransform.identity
@@ -49,7 +56,7 @@ class ViewController: UIViewController {
     // Vision -> AVF coordinate transform.
     var visionToAVFTransform = CGAffineTransform.identity
 
-    // MARK: - View controller methods
+    // MARK: View controller methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,6 +88,33 @@ class ViewController: UIViewController {
         }
     }
 
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // Only change the current orientation if the new one is landscape or
+        // portrait. You can't really do anything about flat or unknown.
+        let deviceOrientation = UIDevice.current.orientation
+        if deviceOrientation.isPortrait || deviceOrientation.isLandscape {
+            currentOrientation = deviceOrientation
+        }
+
+        // Handle device orientation in the preview layer.
+        if let videoPreviewLayerConnection = previewView.videoPreviewLayer.connection {
+            if let newVideoOrientation = AVCaptureVideoOrientation(deviceOrientation: deviceOrientation) {
+                videoPreviewLayerConnection.videoOrientation = newVideoOrientation
+            }
+        }
+
+        // Orientation changed: figure out new region of interest (ROI).
+        calculateRegionOfInterest()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateCutout()
+    }
+
+    // MARK: Setup
     private func setup() {
         title = "Passport scanner"
         view.insetsLayoutMarginsFromSafeArea = false
@@ -114,35 +148,7 @@ class ViewController: UIViewController {
         }
     }
 
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-
-        // Only change the current orientation if the new one is landscape or
-        // portrait. You can't really do anything about flat or unknown.
-        let deviceOrientation = UIDevice.current.orientation
-        if deviceOrientation.isPortrait || deviceOrientation.isLandscape {
-            currentOrientation = deviceOrientation
-        }
-
-        // Handle device orientation in the preview layer.
-        if let videoPreviewLayerConnection = previewView.videoPreviewLayer.connection {
-            if let newVideoOrientation = AVCaptureVideoOrientation(deviceOrientation: deviceOrientation) {
-                videoPreviewLayerConnection.videoOrientation = newVideoOrientation
-            }
-        }
-
-        // Orientation changed: figure out new region of interest (ROI).
-        calculateRegionOfInterest()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        updateCutout()
-    }
-
-    // MARK: - Setup
-
-    func calculateRegionOfInterest() {
+    private func calculateRegionOfInterest() {
         // In landscape orientation the desired ROI is specified as the ratio of
         // buffer width to height. When the UI is rotated to portrait, keep the
         // vertical size the same (in buffer pixels). Also try to keep the
@@ -174,7 +180,7 @@ class ViewController: UIViewController {
         }
     }
 
-    func updateCutout() {
+    private func updateCutout() {
         // Figure out where the cutout ends up in layer coordinates.
         let roiRectTransform = bottomToTopTransform.concatenating(uiRotationTransform)
         let cutout = previewView.videoPreviewLayer.layerRectConverted(
@@ -188,7 +194,7 @@ class ViewController: UIViewController {
         maskLayer.path = path.cgPath
     }
 
-    func setupOrientationAndTransform() {
+    private func setupOrientationAndTransform() {
         // Recalculate the affine transform between Vision coordinates and AVF coordinates.
 
         // Compensate for region of interest.
@@ -219,7 +225,7 @@ class ViewController: UIViewController {
             .concatenating(uiRotationTransform)
     }
 
-    func setupCamera() {
+    private func setupCamera() {
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
                                                           for: AVMediaType.video,
                                                           position: .back) else {
@@ -286,8 +292,8 @@ class ViewController: UIViewController {
     // MARK: - Bounding box drawing
 
     // Draw a box on screen. Must be called from main queue.
-    var boxLayer = [CAShapeLayer]()
-    func draw(rect: CGRect, color: CGColor) {
+    private var boxLayer = [CAShapeLayer]()
+    private func draw(rect: CGRect, color: CGColor) {
         let layer = CAShapeLayer()
         layer.opacity = 0.5
         layer.borderColor = color
@@ -298,17 +304,17 @@ class ViewController: UIViewController {
     }
 
     // Remove all drawn boxes. Must be called on main queue.
-    func removeBoxes() {
+    private func removeBoxes() {
         for layer in boxLayer {
             layer.removeFromSuperlayer()
         }
         boxLayer.removeAll()
     }
 
-    typealias ColoredBoxGroup = (color: CGColor, boxes: [CGRect])
+    private typealias ColoredBoxGroup = (color: CGColor, boxes: [CGRect])
 
     // Draws groups of colored boxes.
-    func show(boxGroups: [ColoredBoxGroup]) {
+    private func show(boxGroups: [ColoredBoxGroup]) {
         let layer = self.previewView.videoPreviewLayer
         self.removeBoxes()
         for boxGroup in boxGroups {
@@ -338,10 +344,20 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 // MARK: - MRZScannerDelegate
 
 extension ViewController: MRZScannerDelegate {
-    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<MRZResult, Error>) {
+    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<ScanningResult, Error>) {
         let alertController: UIAlertController
         switch result {
         case .success(let result):
+            var birthdateString = "-"
+            if let birthdate = result.birthdate {
+                birthdateString = dateFormatter.string(from: birthdate)
+            }
+
+            let expiryDateString = "-"
+            if let expiryDate = result.expiryDate {
+                birthdateString = dateFormatter.string(from: expiryDate)
+            }
+
             alertController = .init(
                 title: "MRZ scanned",
                 message: """
@@ -351,11 +367,11 @@ extension ViewController: MRZScannerDelegate {
                          givenNames: \(result.givenNames)
                          documentNumber: \(result.documentNumber)
                          nationalityCountryCode: \(result.nationalityCountryCode)
-                         birthdate: \(result.birthdate)
-                         sex: \(result.sex ?? "")
-                         expiryDate: \(result.expiryDate)
+                         birthdate: \(birthdateString)
+                         sex: \(result.sex ?? "-")
+                         expiryDate: \(expiryDateString)
                          personalNumber: \(result.personalNumber)
-                         personalNumber2: \(result.personalNumber2 ?? "")
+                         personalNumber2: \(result.personalNumber2 ?? "-")
                          """,
                 preferredStyle: .alert
             )

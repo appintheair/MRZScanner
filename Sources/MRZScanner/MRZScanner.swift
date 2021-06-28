@@ -8,8 +8,10 @@
 import Vision
 import MRZParser
 
+public typealias ScanningResult = MRZResult
+
 public protocol MRZScannerDelegate: AnyObject {
-    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<MRZResult, Error>)
+    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<ScanningResult, Error>)
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: (invalid: [CGRect], valid: [CGRect]))
 }
 

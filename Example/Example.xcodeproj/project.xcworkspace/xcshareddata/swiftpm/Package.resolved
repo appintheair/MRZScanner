@@ -3,19 +3,19 @@
     "pins": [
       {
         "package": "MRZParser",
-        "repositoryURL": "git@github.com:romanmazeev/MRZParser.git",
+        "repositoryURL": "git@github.com:appintheair/MRZParser.git",
         "state": {
-          "branch": "main",
-          "revision": "1e7f288c12401975d61f0868e34b41f263a0ae04",
-          "version": null
+          "branch": null,
+          "revision": "e457e219fb554d3518b236425a981c6a27d11d16",
+          "version": "0.0.1"
         }
       },
       {
         "package": "MRZScanner",
-        "repositoryURL": "https://github.com/romanmazeev/MRZScanner.git",
+        "repositoryURL": "https://github.com/appintheair/MRZScanner",
         "state": {
-          "branch": "main",
-          "revision": "997ee3bd20fb4675e2932d3db1e549c1e8001784",
+          "branch": "develop",
+          "revision": "2ebea2e48460284f6aed35dd5e2b6e588a4a9a61",
           "version": null
         }
       }

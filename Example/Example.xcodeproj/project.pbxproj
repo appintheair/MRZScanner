@@ -12,8 +12,8 @@
 		307E0399268A21AF0075EB2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 307E0397268A21AF0075EB2E /* Main.storyboard */; };
 		307E039B268A21B10075EB2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 307E039A268A21B10075EB2E /* Assets.xcassets */; };
 		307E039E268A21B10075EB2E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 307E039C268A21B10075EB2E /* LaunchScreen.storyboard */; };
-		307E03A7268A22CA0075EB2E /* MRZScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 307E03A6268A22CA0075EB2E /* MRZScanner */; };
 		307E03AA268A24050075EB2E /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E03A9268A24050075EB2E /* PreviewView.swift */; };
+		30CDDEFE268B75DB00D4DF8D /* MRZScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 30CDDEFD268B75DB00D4DF8D /* MRZScanner */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				307E03A7268A22CA0075EB2E /* MRZScanner in Frameworks */,
+				30CDDEFE268B75DB00D4DF8D /* MRZScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +86,7 @@
 			);
 			name = Example;
 			packageProductDependencies = (
-				307E03A6268A22CA0075EB2E /* MRZScanner */,
+				30CDDEFD268B75DB00D4DF8D /* MRZScanner */,
 			);
 			productName = Example;
 			productReference = 307E038E268A21AF0075EB2E /* Example.app */;
@@ -116,7 +116,7 @@
 			);
 			mainGroup = 307E0385268A21AF0075EB2E;
 			packageReferences = (
-				307E03A5268A22CA0075EB2E /* XCRemoteSwiftPackageReference "MRZScanner" */,
+				30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */,
 			);
 			productRefGroup = 307E038F268A21AF0075EB2E /* Products */;
 			projectDirPath = "";
@@ -353,20 +353,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		307E03A5268A22CA0075EB2E /* XCRemoteSwiftPackageReference "MRZScanner" */ = {
+		30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/romanmazeev/MRZScanner.git";
+			repositoryURL = "https://github.com/appintheair/MRZScanner";
 			requirement = {
-				branch = main;
+				branch = develop;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		307E03A6268A22CA0075EB2E /* MRZScanner */ = {
+		30CDDEFD268B75DB00D4DF8D /* MRZScanner */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 307E03A5268A22CA0075EB2E /* XCRemoteSwiftPackageReference "MRZScanner" */;
+			package = 30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */;
 			productName = MRZScanner;
 		};
 /* End XCSwiftPackageProductDependency section */

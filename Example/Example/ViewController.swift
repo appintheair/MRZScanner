@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     private let cutoutView = UIView()
     private let maskLayer = CAShapeLayer()
 
+    // MARK: Scanning related
     private let scanner = MRZScanner()
     private var resultAlertIsPresented = false
 
@@ -36,6 +37,18 @@ class ViewController: UIViewController {
 
     /// Device orientation. Updated whenever the orientation changes to a different supported orientation.
     private var currentOrientation = UIDeviceOrientation.portrait
+
+    private func checkCaptureDeviceAuthorization() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            return
+        default:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                guard granted else { fatalError("To work, you need to give access to the camera.") }
+                return
+            }
+        }
+    }
 
     // MARK: Region of interest (ROI) and text orientation
     // Region of video data output buffer that recognition should be run on.
@@ -134,18 +147,6 @@ class ViewController: UIViewController {
             cutoutView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             cutoutView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
-    }
-
-    private func checkCaptureDeviceAuthorization() {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            return
-        default:
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                guard granted else { fatalError("To work, you need to give access to the camera.") }
-                return
-            }
-        }
     }
 
     private func calculateRegionOfInterest() {

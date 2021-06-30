@@ -49,8 +49,8 @@ class StringTracker {
     }
 
     var stableString: String? {
-        // Require the recognizer to see the same string at least 10 times.
-        bestCount >= 10 ? bestString : nil
+        // Require the recognizer to see the same string at least 5 times.
+        bestCount >= 5 ? bestString : nil
     }
 
     func reset(string: String) {

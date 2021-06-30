@@ -15,3 +15,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: swift build -v
+    - name: iOS Build Action
+      uses: yukiarrr/ios-build-action@v1.4.0
+      with:
+        project-path: ./Example/Example.xcodeproj
+        code-signing-identity: Apple Development
+        team-id: 6G24QH82H7

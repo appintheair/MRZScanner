@@ -348,14 +348,16 @@ extension ViewController: MRZScannerDelegate {
         let alertController: UIAlertController
         switch result {
         case .success(let result):
-            var birthdateString = "-"
+            var birthdateString: String?
+            var expiryDateString: String?
+
+
             if let birthdate = result.birthdate {
                 birthdateString = dateFormatter.string(from: birthdate)
             }
 
-            let expiryDateString = "-"
             if let expiryDate = result.expiryDate {
-                birthdateString = dateFormatter.string(from: expiryDate)
+                expiryDateString = dateFormatter.string(from: expiryDate)
             }
 
             alertController = .init(
@@ -365,13 +367,13 @@ extension ViewController: MRZScannerDelegate {
                          countryCode: \(result.countryCode)
                          surnames: \(result.surnames)
                          givenNames: \(result.givenNames)
-                         documentNumber: \(result.documentNumber)
+                         documentNumber: \(result.documentNumber ?? "-")
                          nationalityCountryCode: \(result.nationalityCountryCode)
-                         birthdate: \(birthdateString)
-                         sex: \(result.sex ?? "-")
-                         expiryDate: \(expiryDateString)
-                         personalNumber: \(result.personalNumber)
-                         personalNumber2: \(result.personalNumber2 ?? "-")
+                         birthdate: \(birthdateString ?? "-")
+                         sex: \(result.sex)
+                         expiryDate: \(expiryDateString ?? "-")
+                         personalNumber: \(result.optionalData ?? "-")
+                         personalNumber2: \(result.optionalData2 ?? "-")
                          """,
                 preferredStyle: .alert
             )

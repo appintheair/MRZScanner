@@ -13,7 +13,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "git@github.com:appintheair/MRZParser.git", .upToNextMajor(from: "0.0.1"))
+        .package(url: "https://github.com/appintheair/MRZParser.git", .upToNextMajor(from: "0.0.1"))
     ],
     targets: [
         .target(

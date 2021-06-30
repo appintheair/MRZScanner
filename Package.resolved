@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "MRZParser",
-        "repositoryURL": "git@github.com:appintheair/MRZParser.git",
+        "repositoryURL": "https://github.com/appintheair/MRZParser.git",
         "state": {
           "branch": null,
-          "revision": "e457e219fb554d3518b236425a981c6a27d11d16",
+          "revision": "dc747072c768d75871597882f43b4be486f9f06a",
           "version": "0.0.1"
         }
       }

@@ -18,7 +18,7 @@ public protocol MRZScannerDelegate: AnyObject {
 public class MRZScanner {
     private var request: VNRecognizeTextRequest!
     private let tracker = StringTracker()
-    private let parser = MRZParser(ocrCorrection: true)
+    private let parser = MRZParser()
     public weak var delegate: MRZScannerDelegate?
 
     public init() {
@@ -58,8 +58,7 @@ public class MRZScanner {
                 
                 // Check if we have any temporally stable numbers.
                 if let sureNumber = self.tracker.stableString,
-                   let result = self.parser.parse(mrzString: sureNumber),
-                   result.allCheckDigitsValid {
+                   let result = self.parser.parse(mrzString: sureNumber) {
                     DispatchQueue.main.async {
                         self.delegate?.mrzScanner(self, didFinishWith: .success(result))
                     }

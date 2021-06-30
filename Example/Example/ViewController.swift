@@ -129,7 +129,6 @@ class ViewController: UIViewController {
 
     // MARK: Setup
     private func setup() {
-        title = "Passport scanner"
         view.insetsLayoutMarginsFromSafeArea = false
         previewView.translatesAutoresizingMaskIntoConstraints = false
         cutoutView.translatesAutoresizingMaskIntoConstraints = false

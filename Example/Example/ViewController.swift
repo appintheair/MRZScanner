@@ -336,7 +336,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), !resultAlertIsPresented {
             scanner.scan(pixelBuffer: pixelBuffer, orientation: textOrientation, regionOfInterest: regionOfInterest)
         }
     }

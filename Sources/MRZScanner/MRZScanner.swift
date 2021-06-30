@@ -70,7 +70,7 @@ public class MRZScanner {
 
         // Configure for running in real-time.
         self.request.recognitionLevel = .fast
-        self.request.minimumTextHeight = 0.1
+        self.request.minimumTextHeight = 0.2
 
         // Language correction won't help recognizing phone numbers. It also
         // makes recognition slower.

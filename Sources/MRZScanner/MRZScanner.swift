@@ -11,7 +11,8 @@ import MRZParser
 public typealias ScanningResult = MRZResult
 
 public protocol MRZScannerDelegate: AnyObject {
-    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<ScanningResult, Error>)
+    func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult)
+    func mrzScanner(_ scanner: MRZScanner, didReceiveError error: Error)
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
 }
 
@@ -22,6 +23,7 @@ public extension MRZScannerDelegate {
 public class MRZScanner {
     private var request: VNRecognizeTextRequest!
     private let parser = MRZParser()
+    private let tracker = StringTracker()
     public weak var delegate: MRZScannerDelegate?
 
     public init() {
@@ -39,9 +41,17 @@ public class MRZScanner {
                 self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
             }
 
-            if let result = self.parser.parse(mrzLines: codes) {
-                DispatchQueue.main.async {
-                    self.delegate?.mrzScanner(self, didFinishWith: .success(result))
+            // Log any found numbers.
+             if [TD1.linesCount, TD2.linesCount, TD3.linesCount].contains(codes.count) {
+                 self.tracker.logFrame(string: codes.joined(separator: "\n"))
+
+                 // Check if we have any temporally stable numbers.
+                 if let sureNumber = self.tracker.stableString,
+                    let result = self.parser.parse(mrzString: sureNumber) {
+                     DispatchQueue.main.async {
+                         self.delegate?.mrzScanner(self, didReceiveResult: result)
+                     }
+                     self.tracker.reset(string: sureNumber)
                 }
             }
         })
@@ -68,7 +78,7 @@ public class MRZScanner {
             do {
                 try imageRequestHandler.perform([self.request])
             } catch {
-                self.delegate?.mrzScanner(self, didFinishWith: .failure(error))
+                self.delegate?.mrzScanner(self, didReceiveError: error)
             }
         }
     }

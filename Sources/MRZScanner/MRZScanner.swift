@@ -15,7 +15,7 @@ public protocol MRZScannerDelegate: AnyObject {
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
 }
 
-extension MRZScannerDelegate {
+public extension MRZScannerDelegate {
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {}
 }
 

@@ -17,10 +17,13 @@ public extension MRZScannerDelegate {
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {}
 }
 
+/// Result of scanning
 public enum ScanningResult {
-    /// Result of scanning. `Accuracy` is the number of successfully recognized frames with this result
+    /// Successful scan result. `Accuracy` is the number of successfully recognized frames with this result
     case success(mrzResult: MRZResult, accuracy: Int)
-    case stringIsNotValidMRZ
+    /// No MRZ code was detected on the scanned image
+    case noValidMRZ
+    /// An error occurred during the request execution
     case requestError(Error)
 }
 
@@ -69,16 +72,17 @@ public class MRZScanner {
             var codes = [String]()
             var boundingRects = [CGRect]()
             for visionResult in results {
-                guard let line = visionResult.topCandidates(1).first?.string else { continue }
-                codes.append(line)
+                guard let line = visionResult.topCandidates(1).first?.string,
+                      [TD1.lineLength, TD2.lineLength, TD3.lineLength].contains(line.count) else { continue }
                 boundingRects.append(visionResult.boundingBox)
+                codes.append(line)
             }
 
             DispatchQueue.main.async {
                 self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
 
                 guard let result = self.parser.parse(mrzLines: codes) else {
-                    self.delegate?.mrzScanner(self, didReceiveResult: .stringIsNotValidMRZ)
+                    self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
                     return
                 }
 

@@ -5,18 +5,18 @@
         "package": "MRZParser",
         "repositoryURL": "https://github.com/appintheair/MRZParser.git",
         "state": {
-          "branch": "develop",
-          "revision": "2faa81576a9dfbd7335596b8083eba593ef20127",
-          "version": null
+          "branch": null,
+          "revision": "1c94d57020b5243671c8c40a931c3b68dac2e329",
+          "version": "1.0.0"
         }
       },
       {
         "package": "MRZScanner",
         "repositoryURL": "https://github.com/appintheair/MRZScanner",
         "state": {
-          "branch": "develop",
-          "revision": "fe58c2172eb671c1a2ca5ae312ff8c04484d50ad",
-          "version": null
+          "branch": null,
+          "revision": "49a6825bdd34082ca49d30fa670daed7d1d63b24",
+          "version": "1.0.0"
         }
       }
     ]

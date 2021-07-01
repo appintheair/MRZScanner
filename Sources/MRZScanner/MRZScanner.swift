@@ -21,7 +21,6 @@ public extension MRZScannerDelegate {
 
 public class MRZScanner {
     private var request: VNRecognizeTextRequest!
-    private let tracker = StringTracker()
     private let parser = MRZParser()
     public weak var delegate: MRZScannerDelegate?
 
@@ -40,42 +39,32 @@ public class MRZScanner {
                 self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
             }
 
-            // Log any found numbers.
-            if [TD1.linesCount, TD2.linesCount, TD3.linesCount].contains(codes.count) {
-                self.tracker.logFrame(string: codes.joined(separator: "\n"))
-                
-                // Check if we have any temporally stable numbers.
-                if let sureNumber = self.tracker.stableString,
-                   let result = self.parser.parse(mrzString: sureNumber) {
-                    DispatchQueue.main.async {
-                        self.delegate?.mrzScanner(self, didFinishWith: .success(result))
-                    }
-                    self.tracker.reset(string: sureNumber)
+            if let result = self.parser.parse(mrzLines: codes) {
+                DispatchQueue.main.async {
+                    self.delegate?.mrzScanner(self, didFinishWith: .success(result))
                 }
             }
         })
 
         // Configure for running in real-time.
-        self.request.recognitionLevel = .fast
-        self.request.minimumTextHeight = 0.1
+        request.recognitionLevel = .fast
+        request.minimumTextHeight = 0.1
 
         // Language correction won't help recognizing phone numbers. It also
         // makes recognition slower.
-        self.request.usesLanguageCorrection = false
+        request.usesLanguageCorrection = false
     }
 
     public func scan(pixelBuffer: CVPixelBuffer,
                      orientation: CGImagePropertyOrientation,
                      regionOfInterest: CGRect) {
+        // Only run on the region of interest for maximum speed.
+        self.request.regionOfInterest = regionOfInterest
         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
                                                         orientation: orientation,
                                                         options: [:])
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self = self else { return }
-
-            // Only run on the region of interest for maximum speed.
-            self.request.regionOfInterest = regionOfInterest
-
             do {
                 try imageRequestHandler.perform([self.request])
             } catch {

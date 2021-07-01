@@ -338,11 +338,9 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 extension ViewController: MRZScannerDelegate {
     func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult) {
         var alertController: UIAlertController?
-        var mrzResult: MRZResult?
         switch result {
         case .success(let result, let accuracy):
             guard accuracy > 0 else { return }
-            mrzResult = result
             alertController = .init(
                 title: "MRZ scanned",
                 message: resultDescription(result),
@@ -354,7 +352,7 @@ extension ViewController: MRZScannerDelegate {
                 message: error.localizedDescription,
                 preferredStyle: .alert
             )
-        case .stringIsNotValidMRZ:
+        case .noValidMRZ:
             break
         }
 
@@ -365,10 +363,7 @@ extension ViewController: MRZScannerDelegate {
         if let alertController = alertController, scanningIsEnabled {
             present(alertController, animated: true)
             scanningIsEnabled = false
-
-            if let mrzResult = mrzResult {
-                scanner.tracker.reset(result: mrzResult)
-            }
+            scanner.tracker.reset()
         }
     }
 

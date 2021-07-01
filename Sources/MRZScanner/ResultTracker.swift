@@ -58,20 +58,3 @@ public class ResultTracker {
         mostProbableResult = nil
     }
 }
-
-extension MRZResult: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(format)
-        hasher.combine(documentType)
-        hasher.combine(countryCode)
-        hasher.combine(surnames)
-        hasher.combine(givenNames)
-        hasher.combine(documentNumber)
-        hasher.combine(nationalityCountryCode)
-        hasher.combine(birthdate)
-        hasher.combine(sex)
-        hasher.combine(expiryDate)
-        hasher.combine(optionalData)
-        hasher.combine(optionalData2)
-    }
-}

@@ -67,18 +67,41 @@ public class MRZScanner {
     }
 
     private func createRequest() -> VNRecognizeTextRequest {
-        VNRecognizeTextRequest(completionHandler: { [weak self] request, error in
-            guard let self = self, let results = request.results as? [VNRecognizedTextObservation] else { return }
-            var codes = [String]()
-            var boundingRects = [CGRect]()
-            for visionResult in results {
-                guard let line = visionResult.topCandidates(1).first?.string,
-                      [TD1.lineLength, TD2.lineLength, TD3.lineLength].contains(line.count) else { continue }
-                boundingRects.append(visionResult.boundingBox)
-                codes.append(line)
-            }
+        let linesCountWithLineLength = [2: [TD2.lineLength, TD3.lineLength], 3: [TD1.lineLength]]
 
+        return VNRecognizeTextRequest(completionHandler: { [weak self] request, error in
             DispatchQueue.main.async {
+                guard let self = self, let results = request.results as? [VNRecognizedTextObservation] else { return }
+                guard let possibleLineLenth = linesCountWithLineLength[results.count] else {
+                    self.delegate?.mrzScanner(self, didFindBoundingRects: [])
+                    self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
+                    return
+                }
+
+                var codes = [String]()
+                var boundingRects = [CGRect]()
+
+                for visionResult in results {
+                    let line = visionResult.topCandidates(10)
+                        .map { $0.string }
+                        .first(where: {
+                            if let firstCode = codes.first {
+                                return firstCode.count == $0.count
+                            } else {
+                                return possibleLineLenth.contains($0.count)
+                            }
+                        })
+
+                    guard let line = line else {
+                        self.delegate?.mrzScanner(self, didFindBoundingRects: [])
+                        self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
+                        return
+                    }
+
+                    boundingRects.append(visionResult.boundingBox)
+                    codes.append(line)
+                }
+
                 self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
 
                 guard let result = self.parser.parse(mrzLines: codes) else {

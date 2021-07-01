@@ -14,9 +14,9 @@
         "package": "MRZScanner",
         "repositoryURL": "https://github.com/appintheair/MRZScanner",
         "state": {
-          "branch": null,
-          "revision": "49a6825bdd34082ca49d30fa670daed7d1d63b24",
-          "version": "1.0.0"
+          "branch": "develop",
+          "revision": "2ec4b9b69178af71b6c4061384587943a5027f32",
+          "version": null
         }
       }
     ]

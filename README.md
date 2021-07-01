@@ -15,7 +15,7 @@ dependencies: [
     .package(url: "https://github.com/appintheair/MRZScanner.git", .upToNextMajor(from: "0.0.1"))
 ]
 ```
-The library has an SPM [dependency](https://github.com/appintheair/MRZParser) for MRZ code parsing 
+The library has an SPM [dependency](https://github.com/appintheair/MRZParser) for MRZ code parsing.
 
 ## Usage
 **First, we need to initialize the scanner**

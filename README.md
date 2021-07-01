@@ -40,7 +40,7 @@ public protocol MRZScannerDelegate: AnyObject {
 }
 ```
 1. Transmits the [ScanningResult](https://github.com/appintheair/MRZScanner/blob/e1bd20fcfbe64f07053dba35b3d15a1de57970a7/Sources/MRZScanner/MRZScanner.swift#L20) when scanning is complete. *Description of the fields in the code*
-2. Passes the boundaries of the recognized text
+2. Passes the boundaries of the possible mrz code lines
 
 
 **To start scanning you need to call [scan](https://github.com/appintheair/MRZScanner/blob/e1bd20fcfbe64f07053dba35b3d15a1de57970a7/Sources/MRZScanner/MRZScanner.swift#L33)**

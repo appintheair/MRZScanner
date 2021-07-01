@@ -52,8 +52,8 @@ public class ResultTracker {
         return (mostProbableResult, mostProbableResultCount)
     }
 
-    public func reset(result: MRZResult) {
-        seenResults.removeValue(forKey: result)
+    public func reset() {
+        seenResults = [:]
         mostProbableResultCount = 0
         mostProbableResult = nil
     }

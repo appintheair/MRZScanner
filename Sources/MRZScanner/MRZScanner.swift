@@ -18,6 +18,7 @@ public extension MRZScannerDelegate {
 }
 
 public enum ScanningResult {
+    /// Result of scanning. `Accuracy` is the number of successfully recognized frames with this result
     case success(mrzResult: MRZResult, accuracy: Int)
     case stringIsNotValidMRZ
     case requestError(Error)
@@ -30,6 +31,14 @@ public class MRZScanner {
 
     public init() {}
 
+
+    /// Starts scanning
+    /// - Parameters:
+    ///   - pixelBuffer: Image.
+    ///   - orientation: Image orientation
+    ///   - regionOfInterest: Only run on the region of interest for maximum speed.
+    ///   - minimumTextHeight: The minimum height of the text expected to be recognized, relative to the image height
+    ///   - recognitionLevel: For live recording it is better to use `.fast` otherwise `.accurate`
     public func scan(pixelBuffer: CVPixelBuffer,
                      orientation: CGImagePropertyOrientation,
                      regionOfInterest: CGRect,

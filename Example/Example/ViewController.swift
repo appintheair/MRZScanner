@@ -340,7 +340,7 @@ extension ViewController: MRZScannerDelegate {
         var alertController: UIAlertController?
         switch result {
         case .success(let result, let accuracy):
-            guard accuracy > 0 else { return }
+            guard accuracy > 1 else { return }
             alertController = .init(
                 title: "MRZ scanned",
                 message: resultDescription(result),

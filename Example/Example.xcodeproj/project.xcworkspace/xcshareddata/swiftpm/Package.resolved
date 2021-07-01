@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/appintheair/MRZParser.git",
         "state": {
           "branch": "develop",
-          "revision": "117325c4e9571ca4432c4be5da73650d7958c60c",
+          "revision": "2faa81576a9dfbd7335596b8083eba593ef20127",
           "version": null
         }
       },
@@ -15,7 +15,7 @@
         "repositoryURL": "https://github.com/appintheair/MRZScanner",
         "state": {
           "branch": "develop",
-          "revision": "8b033e6351356990bb22345195f5750a3b94e0c2",
+          "revision": "fe58c2172eb671c1a2ca5ae312ff8c04484d50ad",
           "version": null
         }
       }

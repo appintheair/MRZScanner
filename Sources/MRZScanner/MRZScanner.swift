@@ -8,11 +8,8 @@
 import Vision
 import MRZParser
 
-public typealias ScanningResult = MRZResult
-
 public protocol MRZScannerDelegate: AnyObject {
     func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult)
-    func mrzScanner(_ scanner: MRZScanner, didReceiveError error: Error)
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
 }
 
@@ -20,14 +17,45 @@ public extension MRZScannerDelegate {
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {}
 }
 
+public enum ScanningResult {
+    case success(mrzResult: MRZResult, accuracy: Int)
+    case stringIsNotValidMRZ
+    case requestError(Error)
+}
+
 public class MRZScanner {
-    private var request: VNRecognizeTextRequest!
     private let parser = MRZParser()
-    private let tracker = StringTracker()
+    public let tracker = ResultTracker()
     public weak var delegate: MRZScannerDelegate?
 
-    public init() {
-        request = .init(completionHandler: { [weak self] request, error in
+    public init() {}
+
+    public func scan(pixelBuffer: CVPixelBuffer,
+                     orientation: CGImagePropertyOrientation,
+                     regionOfInterest: CGRect,
+                     minimumTextHeight: Float = 0.1,
+                     recognitionLevel: VNRequestTextRecognitionLevel = .fast) {
+        let request = createRequest()
+        request.regionOfInterest = regionOfInterest
+        request.minimumTextHeight = minimumTextHeight
+        request.recognitionLevel = recognitionLevel
+        request.usesLanguageCorrection = false
+
+        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
+                                                        orientation: orientation,
+                                                        options: [:])
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            do {
+                try imageRequestHandler.perform([request])
+            } catch {
+                self.delegate?.mrzScanner(self, didReceiveResult: .requestError(error))
+            }
+        }
+    }
+
+    private func createRequest() -> VNRecognizeTextRequest {
+        VNRecognizeTextRequest(completionHandler: { [weak self] request, error in
             guard let self = self, let results = request.results as? [VNRecognizedTextObservation] else { return }
             var codes = [String]()
             var boundingRects = [CGRect]()
@@ -39,47 +67,17 @@ public class MRZScanner {
 
             DispatchQueue.main.async {
                 self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
-            }
 
-            // Log any found numbers.
-             if [TD1.linesCount, TD2.linesCount, TD3.linesCount].contains(codes.count) {
-                 self.tracker.logFrame(string: codes.joined(separator: "\n"))
-
-                 // Check if we have any temporally stable numbers.
-                 if let sureNumber = self.tracker.stableString,
-                    let result = self.parser.parse(mrzString: sureNumber) {
-                     DispatchQueue.main.async {
-                         self.delegate?.mrzScanner(self, didReceiveResult: result)
-                     }
-                     self.tracker.reset(string: sureNumber)
+                guard let result = self.parser.parse(mrzLines: codes) else {
+                    self.delegate?.mrzScanner(self, didReceiveResult: .stringIsNotValidMRZ)
+                    return
                 }
+
+                let scanningResult = self.tracker.trackAndGetMostProbableResult(track: result)
+                self.delegate?.mrzScanner(self, didReceiveResult: .success(
+                    mrzResult: scanningResult.mrzResult, accuracy: scanningResult.accuracy)
+                )
             }
         })
-
-        // Configure for running in real-time.
-        request.recognitionLevel = .fast
-        request.minimumTextHeight = 0.1
-
-        // Language correction won't help recognizing phone numbers. It also
-        // makes recognition slower.
-        request.usesLanguageCorrection = false
-    }
-
-    public func scan(pixelBuffer: CVPixelBuffer,
-                     orientation: CGImagePropertyOrientation,
-                     regionOfInterest: CGRect) {
-        // Only run on the region of interest for maximum speed.
-        self.request.regionOfInterest = regionOfInterest
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
-                                                        orientation: orientation,
-                                                        options: [:])
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
-            do {
-                try imageRequestHandler.perform([self.request])
-            } catch {
-                self.delegate?.mrzScanner(self, didReceiveError: error)
-            }
-        }
     }
 }

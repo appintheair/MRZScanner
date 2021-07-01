@@ -8,6 +8,7 @@
 import UIKit
 import AVFoundation
 import MRZScanner
+import MRZParser
 
 class ViewController: UIViewController {
     // MARK: UI objects
@@ -17,7 +18,7 @@ class ViewController: UIViewController {
 
     // MARK: Scanning related
     private let scanner = MRZScanner()
-    private var resultAlertIsPresented = false
+    private var scanningIsEnabled = true
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -326,7 +327,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), !resultAlertIsPresented {
+        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), scanningIsEnabled {
             scanner.scan(pixelBuffer: pixelBuffer, orientation: textOrientation, regionOfInterest: regionOfInterest)
         }
     }
@@ -335,34 +336,47 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
 // MARK: - MRZScannerDelegate
 
 extension ViewController: MRZScannerDelegate {
-    func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<ScanningResult, Error>) {
-        let alertController: UIAlertController
+    func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult) {
+        var alertController: UIAlertController?
+        var mrzResult: MRZResult?
         switch result {
-        case .success(let result):
+        case .success(let result, let accuracy):
+            guard accuracy > 0 else { return }
+            mrzResult = result
             alertController = .init(
                 title: "MRZ scanned",
                 message: resultDescription(result),
                 preferredStyle: .alert
             )
-        case .failure(let error):
+        case .requestError(let error):
             alertController = .init(
                 title: "Can't read MRZ code",
                 message: error.localizedDescription,
                 preferredStyle: .alert
             )
+        case .stringIsNotValidMRZ:
+            break
         }
 
-        alertController.addAction(.init(title: "OK", style: .cancel, handler: { _ in
-            self.resultAlertIsPresented = false
+        alertController?.addAction(.init(title: "OK", style: .cancel, handler: { [ unowned self ] _ in
+            self.scanningIsEnabled = true
         }))
 
-        if !resultAlertIsPresented {
+        if let alertController = alertController, scanningIsEnabled {
             present(alertController, animated: true)
-            resultAlertIsPresented = true
+            scanningIsEnabled = false
+
+            if let mrzResult = mrzResult {
+                scanner.tracker.reset(result: mrzResult)
+            }
         }
     }
 
-    private func resultDescription(_ result: ScanningResult) -> String {
+    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {
+        show(boxes: rects)
+    }
+
+    private func resultDescription(_ result: MRZResult) -> String {
         var birthdateString: String?
         var expiryDateString: String?
 
@@ -388,10 +402,6 @@ extension ViewController: MRZScannerDelegate {
                personalNumber: \(result.optionalData ?? "-")
                personalNumber2: \(result.optionalData2 ?? "-")
                """
-    }
-
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {
-        show(boxes: rects)
     }
 }
 

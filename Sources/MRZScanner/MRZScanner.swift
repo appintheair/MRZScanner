@@ -82,17 +82,13 @@ public class MRZScanner {
                 var boundingRects = [CGRect]()
 
                 for visionResult in results {
-                    let line = visionResult.topCandidates(10)
-                        .map { $0.string }
-                        .first(where: {
-                            if let firstCode = codes.first {
-                                return firstCode.count == $0.count
-                            } else {
-                                return possibleLineLenth.contains($0.count)
-                            }
-                        })
-
-                    guard let line = line else {
+                    guard let line = visionResult.topCandidates(10).map({$0.string}).first(where: {
+                        if let firstCode = codes.first {
+                            return firstCode.count == $0.count
+                        } else {
+                            return possibleLineLenth.contains($0.count)
+                        }
+                    }) else {
                         self.delegate?.mrzScanner(self, didFindBoundingRects: [])
                         self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
                         return

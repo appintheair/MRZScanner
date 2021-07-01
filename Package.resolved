@@ -5,9 +5,9 @@
         "package": "MRZParser",
         "repositoryURL": "https://github.com/appintheair/MRZParser.git",
         "state": {
-          "branch": "develop",
+          "branch": null,
           "revision": "1c94d57020b5243671c8c40a931c3b68dac2e329",
-          "version": null
+          "version": "1.0.0"
         }
       }
     ]

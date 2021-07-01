@@ -229,8 +229,7 @@ class ViewController: UIViewController {
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
                                                           for: AVMediaType.video,
                                                           position: .back) else {
-            print("Could not create capture device.")
-            return
+            fatalError("Could not create capture device.")
         }
         self.captureDevice = captureDevice
 
@@ -247,8 +246,7 @@ class ViewController: UIViewController {
         }
 
         guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
-            print("Could not create device input.")
-            return
+            fatalError("Could not create device input.")
         }
 
         if captureSession.canAddInput(deviceInput) {
@@ -271,8 +269,7 @@ class ViewController: UIViewController {
             // bounding boxes on screen.
             videoDataOutput.connection(with: AVMediaType.video)?.preferredVideoStabilizationMode = .off
         } else {
-            print("Could not add VDO output")
-            return
+            fatalError("Could not add VDO output")
         }
 
         // Set zoom and autofocus to help focus on very small text.
@@ -282,8 +279,7 @@ class ViewController: UIViewController {
             captureDevice.autoFocusRangeRestriction = .near
             captureDevice.unlockForConfiguration()
         } catch {
-            print("Could not set zoom level due to error: \(error)")
-            return
+            fatalError("Could not set zoom level due to error: \(error)")
         }
 
         captureSession.startRunning()
@@ -320,7 +316,7 @@ class ViewController: UIViewController {
         for boxGroup in boxGroups {
             let color = boxGroup.color
             for box in boxGroup.boxes {
-                let rect = layer.layerRectConverted(fromMetadataOutputRect: box.applying(self.visionToAVFTransform))
+                let rect = layer.layerRectConverted(fromMetadataOutputRect: box.applying(visionToAVFTransform))
                 self.draw(rect: rect, color: color)
             }
         }
@@ -348,55 +344,55 @@ extension ViewController: MRZScannerDelegate {
         let alertController: UIAlertController
         switch result {
         case .success(let result):
-            var birthdateString: String?
-            var expiryDateString: String?
-
-
-            if let birthdate = result.birthdate {
-                birthdateString = dateFormatter.string(from: birthdate)
-            }
-
-            if let expiryDate = result.expiryDate {
-                expiryDateString = dateFormatter.string(from: expiryDate)
-            }
-
             alertController = .init(
                 title: "MRZ scanned",
-                message: """
-                         documentType: \(result.documentType)
-                         countryCode: \(result.countryCode)
-                         surnames: \(result.surnames)
-                         givenNames: \(result.givenNames)
-                         documentNumber: \(result.documentNumber ?? "-")
-                         nationalityCountryCode: \(result.nationalityCountryCode)
-                         birthdate: \(birthdateString ?? "-")
-                         sex: \(result.sex)
-                         expiryDate: \(expiryDateString ?? "-")
-                         personalNumber: \(result.optionalData ?? "-")
-                         personalNumber2: \(result.optionalData2 ?? "-")
-                         """,
+                message: resultDescription(result),
                 preferredStyle: .alert
             )
-
-            alertController.addAction(.init(title: "OK", style: .cancel, handler: { _ in
-                self.resultAlertIsPresented = false
-            }))
         case .failure(let error):
             alertController = .init(
                 title: "Can't read MRZ code",
                 message: error.localizedDescription,
                 preferredStyle: .alert
             )
-
-            alertController.addAction(.init(title: "OK", style: .cancel, handler: { _ in
-                self.resultAlertIsPresented = false
-            }))
         }
+
+        alertController.addAction(.init(title: "OK", style: .cancel, handler: { _ in
+            self.resultAlertIsPresented = false
+        }))
 
         if !resultAlertIsPresented {
             present(alertController, animated: true)
             resultAlertIsPresented = true
         }
+    }
+
+    private func resultDescription(_ result: ScanningResult) -> String {
+        var birthdateString: String?
+        var expiryDateString: String?
+
+
+        if let birthdate = result.birthdate {
+            birthdateString = dateFormatter.string(from: birthdate)
+        }
+
+        if let expiryDate = result.expiryDate {
+            expiryDateString = dateFormatter.string(from: expiryDate)
+        }
+
+        return """
+               documentType: \(result.documentType)
+               countryCode: \(result.countryCode)
+               surnames: \(result.surnames)
+               givenNames: \(result.givenNames)
+               documentNumber: \(result.documentNumber ?? "-")
+               nationalityCountryCode: \(result.nationalityCountryCode)
+               birthdate: \(birthdateString ?? "-")
+               sex: \(result.sex)
+               expiryDate: \(expiryDateString ?? "-")
+               personalNumber: \(result.optionalData ?? "-")
+               personalNumber2: \(result.optionalData2 ?? "-")
+               """
     }
 
     func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: (invalid: [CGRect], valid: [CGRect])) {
@@ -410,11 +406,16 @@ extension ViewController: MRZScannerDelegate {
 extension AVCaptureVideoOrientation {
     init?(deviceOrientation: UIDeviceOrientation) {
         switch deviceOrientation {
-        case .portrait: self = .portrait
-        case .portraitUpsideDown: self = .portraitUpsideDown
-        case .landscapeLeft: self = .landscapeRight
-        case .landscapeRight: self = .landscapeLeft
-        default: return nil
+        case .portrait:
+            self = .portrait
+        case .portraitUpsideDown:
+            self = .portraitUpsideDown
+        case .landscapeLeft:
+            self = .landscapeRight
+        case .landscapeRight:
+            self = .landscapeLeft
+        default:
+            return nil
         }
     }
 }

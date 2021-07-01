@@ -12,7 +12,11 @@ public typealias ScanningResult = MRZResult
 
 public protocol MRZScannerDelegate: AnyObject {
     func mrzScanner(_ scanner: MRZScanner, didFinishWith result: Result<ScanningResult, Error>)
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: (invalid: [CGRect], valid: [CGRect]))
+    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
+}
+
+extension MRZScannerDelegate {
+    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {}
 }
 
 public class MRZScanner {
@@ -25,31 +29,15 @@ public class MRZScanner {
         request = .init(completionHandler: { [weak self] request, error in
             guard let self = self, let results = request.results as? [VNRecognizedTextObservation] else { return }
             var codes = [String]()
-            /// Shows all recognized text lines
-            var invalidRects = [CGRect]()
-            /// Shows words that might be serials
-            var validRects = [CGRect]()
-
-            let maximumCandidates = 1
+            var boundingRects = [CGRect]()
             for visionResult in results {
-                guard let line = visionResult.topCandidates(maximumCandidates).first?.string else { continue }
-
-                var numberIsSubstring = true
-
-                if self.parser.isLineValid(line: line) {
-                    codes.append(line)
-                    numberIsSubstring = false
-
-                    validRects.append(visionResult.boundingBox)
-                }
-
-                if numberIsSubstring {
-                    invalidRects.append(visionResult.boundingBox)
-                }
+                guard let line = visionResult.topCandidates(1).first?.string else { continue }
+                codes.append(line)
+                boundingRects.append(visionResult.boundingBox)
             }
 
             DispatchQueue.main.async {
-                self.delegate?.mrzScanner(self, didFindBoundingRects: (invalid: invalidRects, valid: validRects))
+                self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
             }
 
             // Log any found numbers.

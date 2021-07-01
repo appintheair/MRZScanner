@@ -18,7 +18,16 @@ class ViewController: UIViewController {
 
     // MARK: Scanning related
     private let scanner = MRZScanner()
-    private var scanningIsEnabled = true
+    private var scanningIsEnabled = true {
+        didSet {
+            scanningIsEnabled ? captureSession.startRunning() : captureSession.stopRunning()
+
+            if !scanningIsEnabled {
+                removeBoxes()
+                scanner.tracker.reset()
+            }
+        }
+    }
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -363,7 +372,6 @@ extension ViewController: MRZScannerDelegate {
         if let alertController = alertController, scanningIsEnabled {
             present(alertController, animated: true)
             scanningIsEnabled = false
-            scanner.tracker.reset()
         }
     }
 

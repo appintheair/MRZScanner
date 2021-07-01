@@ -307,18 +307,13 @@ class ViewController: UIViewController {
         boxLayer.removeAll()
     }
 
-    private typealias ColoredBoxGroup = (color: CGColor, boxes: [CGRect])
-
-    // Draws groups of colored boxes.
-    private func show(boxGroups: [ColoredBoxGroup]) {
+    // Draws boxes.
+    private func show(boxes: [CGRect]) {
         let layer = self.previewView.videoPreviewLayer
         self.removeBoxes()
-        for boxGroup in boxGroups {
-            let color = boxGroup.color
-            for box in boxGroup.boxes {
-                let rect = layer.layerRectConverted(fromMetadataOutputRect: box.applying(visionToAVFTransform))
-                self.draw(rect: rect, color: color)
-            }
+        for box in boxes {
+            let rect = layer.layerRectConverted(fromMetadataOutputRect: box.applying(visionToAVFTransform))
+            self.draw(rect: rect, color: UIColor.red.cgColor)
         }
     }
 }
@@ -395,9 +390,8 @@ extension ViewController: MRZScannerDelegate {
                """
     }
 
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: (invalid: [CGRect], valid: [CGRect])) {
-        show(boxGroups: [(color: UIColor.red.cgColor, boxes: rects.invalid),
-                         (color: UIColor.green.cgColor, boxes: rects.valid)])
+    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {
+        show(boxes: rects)
     }
 }
 

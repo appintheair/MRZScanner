@@ -53,7 +53,7 @@ scanner.scan(pixelBuffer: pixelBuffer,
 
 **To reset the tracked data need to call [reset](https://github.com/appintheair/MRZScanner/blob/e1bd20fcfbe64f07053dba35b3d15a1de57970a7/Sources/MRZScanner/ResultTracker.swift#L55)**
 ```swift
-scanner.tracker.reset(result: result)
+scanner.tracker.reset()
 ```
 
 ## License

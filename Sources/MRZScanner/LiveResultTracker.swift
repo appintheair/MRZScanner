@@ -28,7 +28,7 @@ class LiveResultTracker {
         seenMRZResults = seenMRZResults.filter { $0.value.lastSeen > frameIndex - 30 }
 
         if seenMRZResults[result] == nil {
-            seenMRZResults[result] = (lastSeen: 0, count: -1)
+            seenMRZResults[result] = (lastSeen: 0, count: 0)
         }
 
         seenMRZResults[result]?.lastSeen = frameIndex

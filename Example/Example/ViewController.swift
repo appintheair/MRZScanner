@@ -412,7 +412,8 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                     case .success(let scanningResult):
                         guard scanningResult.result.accuracy > 2 else { return }
                         self?.displayMRZResult(scanningResult.result.result)
-                        self?.showBoundingRects(valid: scanningResult.boundingRects.valid, invalid:   scanningResult.boundingRects.invalid)
+                        self?.showBoundingRects(valid: scanningResult.boundingRects.valid,
+                                                invalid: scanningResult.boundingRects.invalid)
                     case .failure(let error):
                         self?.displayError(error)
                     }

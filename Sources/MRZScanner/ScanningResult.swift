@@ -8,6 +8,6 @@
 import CoreGraphics
 
 public struct ScanningResult<T> {
-    let result: T
-    let boundingRects: (valid: [CGRect], invalid: [CGRect])
+    public let result: T
+    public let boundingRects: (valid: [CGRect], invalid: [CGRect])
 }

@@ -20,14 +20,16 @@ public class MRZScanner {
     ///   - regionOfInterest: Only run on the region of interest for maximum speed.
     ///   - minimumTextHeight: The minimum height of the text expected to be recognized, relative to the image height
     ///   - recognitionLevel: VNRequestTextRecognitionLevel
+    ///   - foundBoundingRectsHandler: Passes all found text bounding rects in region of interest
     ///   - completionHandler: Passes the result of a scan
     public func scan(pixelBuffer: CVPixelBuffer,
                      orientation: CGImagePropertyOrientation,
                      regionOfInterest: CGRect,
                      minimumTextHeight: Float = 0.1,
                      recognitionLevel: VNRequestTextRecognitionLevel = .accurate,
+                     foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
                      completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void) {
-        let request = createRequest(completionHandler: completionHandler)
+        let request = createRequest(completionHandler: completionHandler, foundBoundingRectsHandler: foundBoundingRectsHandler)
         request.regionOfInterest = regionOfInterest
         request.minimumTextHeight = minimumTextHeight
         request.recognitionLevel = recognitionLevel
@@ -47,7 +49,8 @@ public class MRZScanner {
 
 
     private func createRequest(
-        completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void
+        completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void,
+        foundBoundingRectsHandler: (([CGRect]) -> Void)?
     ) -> VNRecognizeTextRequest {
         let lineLengthAndLinesCount = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
 
@@ -86,6 +89,8 @@ public class MRZScanner {
 
                     boundingRects.append(visionResult.boundingBox)
                 }
+
+                foundBoundingRectsHandler?(boundingRects)
 
                 if let result = self.parser.parse(mrzLines: lines.map { $0.key }) {
                     let validLinesRects = lines.map { boundingRects[$0.value] }

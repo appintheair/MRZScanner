@@ -13,6 +13,7 @@ public typealias LiveScanningResult = (result: MRZResult, accuracy: Int)
 public protocol LiveMRZScannerDelegate: AnyObject {
     func liveMRZScanner(_ scanner: LiveMRZScanner,
                         didReceiveResult result: Result<ScanningResult<LiveScanningResult>, Error>)
+    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect])
 }
 
 public class LiveMRZScanner: MRZScanner {
@@ -33,37 +34,42 @@ public class LiveMRZScanner: MRZScanner {
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
-            recognitionLevel: .fast
-        ) { [weak self] result in
-            guard let self = self else { return }
+            recognitionLevel: .fast,
+            foundBoundingRectsHandler: { [weak self] in
+                guard let self = self else { return }
+                self.delegate?.liveMRZScanner(self, didFoundBoundingRects: $0)
+            },
+            completionHandler: { [weak self] result in
+                guard let self = self else { return }
 
-            switch result {
-            case .success(let scanningResult):
-                self.liveResultTracker.track(result: scanningResult.result)
-                guard let liveScanningResult = self.liveResultTracker.liveScanningResult else {
-                    fatalError("liveScanningResult must be set")
-                }
-                self.delegate?.liveMRZScanner(
-                    self,
-                    didReceiveResult: .success(
-                        .init(
-                            result: liveScanningResult,
-                            boundingRects: scanningResult.boundingRects
+                switch result {
+                case .success(let scanningResult):
+                    self.liveResultTracker.track(result: scanningResult.result)
+                    guard let liveScanningResult = self.liveResultTracker.liveScanningResult else {
+                        fatalError("liveScanningResult must be set")
+                    }
+                    self.delegate?.liveMRZScanner(
+                        self,
+                        didReceiveResult: .success(
+                            .init(
+                                result: liveScanningResult,
+                                boundingRects: scanningResult.boundingRects
+                            )
                         )
                     )
-                )
-            case .failure(let error):
-                if error is MRZScannerError {
-                    return
-                } else {
-                    self.delegate?.liveMRZScanner(self, didReceiveResult: .failure(error))
+                case .failure(let error):
+                    if error is MRZScannerError {
+                        return
+                    } else {
+                        self.delegate?.liveMRZScanner(self, didReceiveResult: .failure(error))
+                    }
                 }
             }
-        }
+        )
     }
 
-    /// Resets `LiveResultTracker` state
-    public func resetLiveScanningSession() {
-        liveResultTracker.reset()
-    }
-}
+            /// Resets `LiveResultTracker` state
+            public func resetLiveScanningSession() {
+            liveResultTracker.reset()
+        }
+            }

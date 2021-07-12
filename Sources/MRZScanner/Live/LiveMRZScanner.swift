@@ -16,6 +16,10 @@ public protocol LiveMRZScannerDelegate: AnyObject {
     func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect])
 }
 
+extension LiveMRZScannerDelegate {
+    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {}
+}
+
 public class LiveMRZScanner: MRZScanner {
     public weak var delegate: LiveMRZScannerDelegate?
     private let liveResultTracker = LiveResultTracker()

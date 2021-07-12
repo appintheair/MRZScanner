@@ -8,7 +8,6 @@
 import UIKit
 import AVFoundation
 import MRZScanner
-import MRZParser
 
 class ViewController: UIViewController {
     // MARK: UI objects
@@ -342,7 +341,7 @@ class ViewController: UIViewController {
         addAlertActionAndPresent(alertController)
     }
 
-    private func displayMRZResult(_ result: MRZResult) {
+    private func displayScanningResult(_ result: ParserResult) {
         var birthdateString: String?
         var expiryDateString: String?
 
@@ -411,7 +410,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                     switch result {
                     case .success(let scanningResult):
                         guard scanningResult.result.accuracy > 2 else { return }
-                        self?.displayMRZResult(scanningResult.result.result)
+                        self?.displayScanningResult(scanningResult.result.result)
                         self?.showBoundingRects(valid: scanningResult.boundingRects.valid,
                                                 invalid: scanningResult.boundingRects.invalid)
                     case .failure(let error):

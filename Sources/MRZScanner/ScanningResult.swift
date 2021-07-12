@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ScanningResult.swift
 //  
 //
 //  Created by Roman Mazeev on 12.07.2021.

@@ -20,18 +20,18 @@ extension LiveMRZScannerDelegate {
     func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {}
 }
 
-public class LiveMRZScanner: MRZScanner {
+public struct LiveMRZScanner {
     public weak var delegate: LiveMRZScannerDelegate?
     private let liveResultTracker = LiveResultTracker()
     private let mrzScanner = MRZScanner()
 
-    public override init() {}
+    public init() {}
 
     public func scanFrame(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
-        regionOfInterest: CGRect,
-        minimumTextHeight: Float = 0.1
+        regionOfInterest: CGRect? = nil,
+        minimumTextHeight: Float? = nil
     ) {
         mrzScanner.scan(
             pixelBuffer: pixelBuffer,
@@ -39,14 +39,11 @@ public class LiveMRZScanner: MRZScanner {
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: .fast,
-            foundBoundingRectsHandler: { [weak self] in
-                guard let self = self else { return }
+            foundBoundingRectsHandler: {
                 self.delegate?.liveMRZScanner(self, didFoundBoundingRects: $0)
             },
-            completionHandler: { [weak self] result in
-                guard let self = self else { return }
-
-                switch result {
+            completionHandler: {
+                switch $0 {
                 case .success(let scanningResult):
                     self.liveResultTracker.track(result: scanningResult.result)
                     guard let liveScanningResult = self.liveResultTracker.liveScanningResult else {
@@ -72,8 +69,8 @@ public class LiveMRZScanner: MRZScanner {
         )
     }
 
-            /// Resets `LiveResultTracker` state
-            public func resetLiveScanningSession() {
-            liveResultTracker.reset()
-        }
-            }
+    /// Resets `LiveResultTracker` state
+    public func resetLiveScanningSession() {
+        liveResultTracker.reset()
+    }
+}

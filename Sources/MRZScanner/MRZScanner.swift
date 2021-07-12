@@ -8,30 +8,33 @@
 import MRZParser
 import Vision
 
-public class MRZScanner {
-    private let parser = MRZParser()
-
+public struct MRZScanner {
     public init() {}
 
     /// Starts scanning
     /// - Parameters:
     ///   - pixelBuffer: Image.
-    ///   - orientation: Image orientation
+    ///   - orientation: Image orientation.
     ///   - regionOfInterest: Only run on the region of interest for maximum speed.
-    ///   - minimumTextHeight: The minimum height of the text expected to be recognized, relative to the image height
-    ///   - recognitionLevel: VNRequestTextRecognitionLevel
-    ///   - foundBoundingRectsHandler: Passes all found text bounding rects in region of interest
-    ///   - completionHandler: Passes the result of a scan
+    ///   - minimumTextHeight: The minimum height, relative to the image height, of the text to recognize.
+    ///   - recognitionLevel: A value that determines whether the request prioritizes accuracy or speed in text recognition.
+    ///   - foundBoundingRectsHandler: Passes all found text bounding rects in region of interest.
+    ///   - completionHandler: Passes the result of a scan.
     public func scan(pixelBuffer: CVPixelBuffer,
                      orientation: CGImagePropertyOrientation,
-                     regionOfInterest: CGRect,
-                     minimumTextHeight: Float = 0.1,
+                     regionOfInterest: CGRect? = nil,
+                     minimumTextHeight: Float? = nil,
                      recognitionLevel: VNRequestTextRecognitionLevel = .accurate,
                      foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
                      completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void) {
-        let request = createRequest(completionHandler: completionHandler, foundBoundingRectsHandler: foundBoundingRectsHandler)
-        request.regionOfInterest = regionOfInterest
-        request.minimumTextHeight = minimumTextHeight
+        let request = createRequest(completionHandler: completionHandler,
+                                    foundBoundingRectsHandler: foundBoundingRectsHandler)
+        if let regionOfInterest = regionOfInterest {
+            request.regionOfInterest = regionOfInterest
+        }
+        if let minimumTextHeight = minimumTextHeight {
+            request.minimumTextHeight = minimumTextHeight
+        }
         request.recognitionLevel = recognitionLevel
         request.usesLanguageCorrection = false
 
@@ -54,9 +57,8 @@ public class MRZScanner {
     ) -> VNRecognizeTextRequest {
         let lineLengthAndLinesCount = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
 
-        return VNRecognizeTextRequest(completionHandler: { [weak self] request, error in
+        return VNRecognizeTextRequest(completionHandler: { request, error in
             DispatchQueue.main.async {
-                guard let self = self else { return }
                 guard error == nil else {
                     completionHandler(.failure(error!))
                     return
@@ -92,7 +94,7 @@ public class MRZScanner {
 
                 foundBoundingRectsHandler?(boundingRects)
 
-                if let result = self.parser.parse(mrzLines: lines.map { $0.key }) {
+                if let result = MRZParser().parse(mrzLines: lines.map { $0.key }) {
                     let validLinesRects = lines.map { boundingRects[$0.value] }
                     let invalidLinesRects = boundingRects.filter { !validLinesRects.contains($0) }
                     completionHandler(

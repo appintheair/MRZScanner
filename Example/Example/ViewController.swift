@@ -350,6 +350,10 @@ extension ViewController: LiveMRZScannerDelegate {
         }
     }
 
+    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {
+        showBoundingRects(valid: [], invalid: result)
+    }
+
     private func displayError(_ error: Error) {
         let alertController = UIAlertController(
             title: "Can't read MRZ code",
@@ -407,7 +411,7 @@ extension ViewController: LiveMRZScannerDelegate {
         }
     }
 
-    private func showBoundingRects(valid valicRects: [CGRect], invalid invalidRects: [CGRect]) {
+    private func showBoundingRects(valid validRects: [CGRect], invalid invalidRects: [CGRect]) {
         let layer = self.previewView.videoPreviewLayer
         self.removeBoxes()
 
@@ -415,7 +419,7 @@ extension ViewController: LiveMRZScannerDelegate {
             let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
             self.draw(rect: rect, color: UIColor.red.cgColor)
         }
-        for rect in valicRects {
+        for rect in validRects {
             let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
             self.draw(rect: rect, color: UIColor.green.cgColor)
         }

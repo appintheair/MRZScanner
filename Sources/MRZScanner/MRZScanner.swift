@@ -94,7 +94,7 @@ public class MRZScanner {
 
                 if let result = self.parser.parse(mrzLines: lines.map { $0.key }) {
                     let validLinesRects = lines.map { boundingRects[$0.value] }
-                    let invalidLinesRects = boundingRects.filter { validLinesRects.contains($0) }
+                    let invalidLinesRects = boundingRects.filter { !validLinesRects.contains($0) }
                     completionHandler(
                         .success(
                             .init(

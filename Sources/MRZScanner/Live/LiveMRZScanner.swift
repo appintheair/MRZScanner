@@ -20,6 +20,8 @@ public class LiveMRZScanner: MRZScanner {
     private let liveResultTracker = LiveResultTracker()
     private let mrzScanner = MRZScanner()
 
+    public init() {}
+
     public func scanFrame(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,

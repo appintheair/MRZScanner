@@ -53,7 +53,11 @@ public class LiveMRZScanner: MRZScanner {
                     )
                 )
             case .failure(let error):
-                self.delegate?.liveMRZScanner(self, didReceiveResult: .failure(error))
+                if error is MRZScannerError {
+                    return
+                } else {
+                    self.delegate?.liveMRZScanner(self, didReceiveResult: .failure(error))
+                }
             }
         }
     }

@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     private let maskLayer = CAShapeLayer()
 
     // MARK: Scanning related
-    private let scanner = MRZScanner()
+    private let scanner = LiveMRZScanner()
     private var scanningIsEnabled = true {
         didSet {
             scanningIsEnabled ? captureSession.startRunning() : captureSession.stopRunning()
@@ -316,16 +316,6 @@ class ViewController: UIViewController {
         }
         boxLayer.removeAll()
     }
-
-    // Draws boxes.
-    private func show(boxes: [CGRect]) {
-        let layer = self.previewView.videoPreviewLayer
-        self.removeBoxes()
-        for box in boxes {
-            let rect = layer.layerRectConverted(fromMetadataOutputRect: box.applying(visionToAVFTransform))
-            self.draw(rect: rect, color: UIColor.red.cgColor)
-        }
-    }
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
@@ -337,49 +327,40 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
         from connection: AVCaptureConnection
     ) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), scanningIsEnabled {
-            scanner.scan(pixelBuffer: pixelBuffer, orientation: textOrientation, regionOfInterest: regionOfInterest)
+            scanner.scanFrame(
+                pixelBuffer: pixelBuffer,
+                orientation: textOrientation,
+                regionOfInterest: regionOfInterest
+            )
         }
     }
 }
 
-// MARK: - MRZScannerDelegate
+// MARK: - LiveMRZScannerDelegate
 
-extension ViewController: MRZScannerDelegate {
-    func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult) {
-        var alertController: UIAlertController?
+extension ViewController: LiveMRZScannerDelegate {
+    func liveMRZScanner(_ scanner: LiveMRZScanner, didReceiveResult result: Result<ScanningResult<LiveScanningResult>, Error>) {
         switch result {
-        case .success(let result, let accuracy):
-            guard accuracy > 1 else { return }
-            alertController = .init(
-                title: "MRZ scanned",
-                message: resultDescription(result),
-                preferredStyle: .alert
-            )
-        case .requestError(let error):
-            alertController = .init(
-                title: "Can't read MRZ code",
-                message: error.localizedDescription,
-                preferredStyle: .alert
-            )
-        case .noValidMRZ:
-            break
-        }
-
-        alertController?.addAction(.init(title: "OK", style: .cancel, handler: { [ unowned self ] _ in
-            self.scanningIsEnabled = true
-        }))
-
-        if let alertController = alertController, scanningIsEnabled {
-            present(alertController, animated: true)
-            scanningIsEnabled = false
+        case .success(let scanningResult):
+            guard scanningResult.result.accuracy > 2 else { return }
+            displayMRZResult(scanningResult.result.result)
+            showBoundingRects(valid: scanningResult.boundingRects.valid, invalid: scanningResult.boundingRects.invalid)
+        case .failure(let error):
+            displayError(error)
         }
     }
 
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {
-        show(boxes: rects)
+    private func displayError(_ error: Error) {
+        let alertController = UIAlertController(
+            title: "Can't read MRZ code",
+            message: error.localizedDescription,
+            preferredStyle: .alert
+        )
+
+        addAlertActionAndPresent(alertController)
     }
 
-    private func resultDescription(_ result: MRZResult) -> String {
+    private func displayMRZResult(_ result: MRZResult) {
         var birthdateString: String?
         var expiryDateString: String?
 
@@ -392,19 +373,52 @@ extension ViewController: MRZScannerDelegate {
             expiryDateString = dateFormatter.string(from: expiryDate)
         }
 
-        return """
-               documentType: \(result.documentType)
-               countryCode: \(result.countryCode)
-               surnames: \(result.surnames)
-               givenNames: \(result.givenNames)
-               documentNumber: \(result.documentNumber ?? "-")
-               nationalityCountryCode: \(result.nationalityCountryCode)
-               birthdate: \(birthdateString ?? "-")
-               sex: \(result.sex)
-               expiryDate: \(expiryDateString ?? "-")
-               personalNumber: \(result.optionalData ?? "-")
-               personalNumber2: \(result.optionalData2 ?? "-")
-               """
+        let alertText = """
+                        documentType: \(result.documentType)
+                        countryCode: \(result.countryCode)
+                        surnames: \(result.surnames)
+                        givenNames: \(result.givenNames)
+                        documentNumber: \(result.documentNumber ?? "-")
+                        nationalityCountryCode: \(result.nationalityCountryCode)
+                        birthdate: \(birthdateString ?? "-")
+                        sex: \(result.sex)
+                        expiryDate: \(expiryDateString ?? "-")
+                        personalNumber: \(result.optionalData ?? "-")
+                        personalNumber2: \(result.optionalData2 ?? "-")
+                        """
+
+        let alertController = UIAlertController(
+            title: "MRZ scanned",
+            message: alertText,
+            preferredStyle: .alert
+        )
+
+        addAlertActionAndPresent(alertController)
+    }
+
+    private func addAlertActionAndPresent(_ alertController: UIAlertController) {
+        alertController.addAction(.init(title: "OK", style: .cancel, handler: { [ unowned self ] _ in
+            self.scanningIsEnabled = true
+        }))
+
+        if scanningIsEnabled {
+            present(alertController, animated: true)
+            scanningIsEnabled = false
+        }
+    }
+
+    private func showBoundingRects(valid valicRects: [CGRect], invalid invalidRects: [CGRect]) {
+        let layer = self.previewView.videoPreviewLayer
+        self.removeBoxes()
+
+        for rect in invalidRects {
+            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
+            self.draw(rect: rect, color: UIColor.red.cgColor)
+        }
+        for rect in valicRects {
+            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
+            self.draw(rect: rect, color: UIColor.green.cgColor)
+        }
     }
 }
 

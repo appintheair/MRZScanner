@@ -20,7 +20,7 @@ extension LiveMRZScannerDelegate {
     func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {}
 }
 
-public struct LiveMRZScanner {
+public class LiveMRZScanner {
     public weak var delegate: LiveMRZScannerDelegate?
     private let liveResultTracker = LiveResultTracker()
     private let mrzScanner = MRZScanner()
@@ -39,10 +39,12 @@ public struct LiveMRZScanner {
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: .fast,
-            foundBoundingRectsHandler: {
+            foundBoundingRectsHandler: { [weak self] in
+                guard let self = self else { return }
                 self.delegate?.liveMRZScanner(self, didFoundBoundingRects: $0)
             },
-            completionHandler: {
+            completionHandler: { [weak self] in
+                guard let self = self else { return }
                 switch $0 {
                 case .success(let scanningResult):
                     self.liveResultTracker.track(result: scanningResult.result)

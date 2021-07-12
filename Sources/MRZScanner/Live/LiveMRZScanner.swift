@@ -6,9 +6,8 @@
 //
 
 import Vision
-import MRZParser
 
-public typealias LiveScanningResult = (result: MRZResult, accuracy: Int)
+public typealias LiveScanningResult = (result: ParserResult, accuracy: Int)
 
 public struct LiveMRZScanner {
     private let liveResultTracker = LiveResultTracker()

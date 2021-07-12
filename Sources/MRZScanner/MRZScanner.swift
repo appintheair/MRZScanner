@@ -26,7 +26,7 @@ public struct MRZScanner {
                      minimumTextHeight: Float? = nil,
                      recognitionLevel: VNRequestTextRecognitionLevel = .accurate,
                      foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
-                     completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void) {
+                     completionHandler: @escaping (Result<ScanningResult<ParserResult>, Error>) -> Void) {
         let request = createRequest(completionHandler: completionHandler,
                                     foundBoundingRectsHandler: foundBoundingRectsHandler)
         if let regionOfInterest = regionOfInterest {
@@ -52,7 +52,7 @@ public struct MRZScanner {
 
 
     private func createRequest(
-        completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void,
+        completionHandler: @escaping (Result<ScanningResult<ParserResult>, Error>) -> Void,
         foundBoundingRectsHandler: (([CGRect]) -> Void)?
     ) -> VNRecognizeTextRequest {
         let lineLengthAndLinesCount = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]

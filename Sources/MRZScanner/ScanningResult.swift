@@ -6,6 +6,9 @@
 //
 
 import CoreGraphics
+import MRZParser
+
+public typealias ParserResult = MRZResult
 
 public struct ScanningResult<T> {
     public let result: T

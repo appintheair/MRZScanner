@@ -1,7 +1,7 @@
     import XCTest
     @testable import MRZScanner
 
-    final class MRZScanerTests: XCTestCase {
+    final class MRZParserPackageTests: XCTestCase {
         var liveResultTracker: LiveResultTracker!
         private let firstExampleMRZResult = ParserResult(
             format: .td3,

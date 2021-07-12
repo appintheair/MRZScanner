@@ -13,12 +13,15 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/appintheair/MRZParser.git", .upToNextMajor(from: "1.0.1"))
+        .package(url: "https://github.com/appintheair/MRZParser.git", .branch("develop"))
     ],
     targets: [
         .target(
             name: "MRZScanner",
             dependencies: ["MRZParser"]
-        )
+        ),
+        .testTarget(
+            name: "MRZScannerTests",
+            dependencies: ["MRZScanner"]),
     ]
 )

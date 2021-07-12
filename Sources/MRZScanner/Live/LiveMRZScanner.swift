@@ -10,18 +10,7 @@ import MRZParser
 
 public typealias LiveScanningResult = (result: MRZResult, accuracy: Int)
 
-public protocol LiveMRZScannerDelegate: AnyObject {
-    func liveMRZScanner(_ scanner: LiveMRZScanner,
-                        didReceiveResult result: Result<ScanningResult<LiveScanningResult>, Error>)
-    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect])
-}
-
-extension LiveMRZScannerDelegate {
-    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {}
-}
-
-public class LiveMRZScanner {
-    public weak var delegate: LiveMRZScannerDelegate?
+public struct LiveMRZScanner {
     private let liveResultTracker = LiveResultTracker()
     private let mrzScanner = MRZScanner()
 
@@ -31,7 +20,9 @@ public class LiveMRZScanner {
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
-        minimumTextHeight: Float? = nil
+        minimumTextHeight: Float? = nil,
+        foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
+        completionHandler: @escaping (Result<ScanningResult<LiveScanningResult>, Error>) -> Void
     ) {
         mrzScanner.scan(
             pixelBuffer: pixelBuffer,
@@ -39,21 +30,16 @@ public class LiveMRZScanner {
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: .fast,
-            foundBoundingRectsHandler: { [weak self] in
-                guard let self = self else { return }
-                self.delegate?.liveMRZScanner(self, didFoundBoundingRects: $0)
-            },
-            completionHandler: { [weak self] in
-                guard let self = self else { return }
+            foundBoundingRectsHandler: foundBoundingRectsHandler,
+            completionHandler: {
                 switch $0 {
                 case .success(let scanningResult):
                     self.liveResultTracker.track(result: scanningResult.result)
                     guard let liveScanningResult = self.liveResultTracker.liveScanningResult else {
                         fatalError("liveScanningResult must be set")
                     }
-                    self.delegate?.liveMRZScanner(
-                        self,
-                        didReceiveResult: .success(
+                    completionHandler(
+                        .success(
                             .init(
                                 result: liveScanningResult,
                                 boundingRects: scanningResult.boundingRects
@@ -64,7 +50,7 @@ public class LiveMRZScanner {
                     if error is MRZScannerError {
                         return
                     } else {
-                        self.delegate?.liveMRZScanner(self, didReceiveResult: .failure(error))
+                        completionHandler(.failure(error))
                     }
                 }
             }

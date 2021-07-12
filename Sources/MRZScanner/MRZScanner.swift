@@ -5,136 +5,108 @@
 //  Created by Roman Mazeev on 15.06.2021.
 //
 
-import Vision
 import MRZParser
-
-/// Scan result and its accuracy based on frequency of occurrence
-public typealias LiveScanningResult = (mrzResult: MRZResult, accuracy: Int)
-
-public protocol MRZScannerDelegate: AnyObject {
-    /// Passes the result of the scan
-    func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult)
-    /// Passes the bounding rects of mrz strings
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
-}
-
-public extension MRZScannerDelegate {
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect]) {}
-}
-
-/// Result of scanning
-public enum ScanningResult {
-    /// Successful scan result using live capture. `Accuracy` is the number of successfully recognized frames with this result
-    case liveSuccess(LiveScanningResult)
-    /// Successful scan when `!isLive`.
-    case imageSuccess(MRZResult: MRZResult)
-    /// No MRZ code was detected on the scanned image
-    case noValidMRZ
-    /// An error occurred during the request execution
-    case requestError(Error)
-}
+import Vision
 
 public class MRZScanner {
-    public weak var delegate: MRZScannerDelegate?
-
     private let parser = MRZParser()
-    private let liveResultTracker = LiveResultTracker()
 
     public init() {}
-
 
     /// Starts scanning
     /// - Parameters:
     ///   - pixelBuffer: Image.
     ///   - orientation: Image orientation
     ///   - regionOfInterest: Only run on the region of interest for maximum speed.
-    ///   - isLive: Needed to set the `recognitionLevel` of the Vision request and  for `LiveResultTracker` using
     ///   - minimumTextHeight: The minimum height of the text expected to be recognized, relative to the image height
+    ///   - recognitionLevel: VNRequestTextRecognitionLevel
+    ///   - completionHandler: Passes the result of a scan
     public func scan(pixelBuffer: CVPixelBuffer,
                      orientation: CGImagePropertyOrientation,
                      regionOfInterest: CGRect,
-                     isLive: Bool = false,
-                     minimumTextHeight: Float = 0.1) {
-        let request = createRequest(isLive: isLive)
+                     minimumTextHeight: Float = 0.1,
+                     recognitionLevel: VNRequestTextRecognitionLevel = .accurate,
+                     completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void) {
+        let request = createRequest(completionHandler: completionHandler)
         request.regionOfInterest = regionOfInterest
         request.minimumTextHeight = minimumTextHeight
-        request.recognitionLevel = isLive ? .fast : .accurate
+        request.recognitionLevel = recognitionLevel
         request.usesLanguageCorrection = false
 
         let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
                                                         orientation: orientation,
                                                         options: [:])
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self = self else { return }
+        DispatchQueue.global(qos: .userInitiated).async {
             do {
                 try imageRequestHandler.perform([request])
             } catch {
-                self.delegate?.mrzScanner(self, didReceiveResult: .requestError(error))
+                completionHandler(.failure(error))
             }
         }
     }
 
-    /// Resets `LiveResultTracker` state
-    public func resetLiveScanningSession() {
-        liveResultTracker.reset()
-    }
 
-    private func createRequest(isLive: Bool) -> VNRecognizeTextRequest {
-        let linesCountWithLineLength = [2: [TD2.lineLength, TD3.lineLength], 3: [TD1.lineLength]]
+    private func createRequest(
+        completionHandler: @escaping (Result<ScanningResult<MRZResult>, Error>) -> Void
+    ) -> VNRecognizeTextRequest {
+        let lineLengthAndLinesCount = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
 
         return VNRecognizeTextRequest(completionHandler: { [weak self] request, error in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 guard error == nil else {
-                    self.delegate?.mrzScanner(self, didReceiveResult: .requestError(error!))
+                    completionHandler(.failure(error!))
                     return
                 }
 
-                guard let results = request.results as? [VNRecognizedTextObservation] else { return }
-                guard let possibleLineLenth = linesCountWithLineLength[results.count] else {
-                    self.delegate?.mrzScanner(self, didFindBoundingRects: [])
-                    self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
-                    return
-                }
+                let results = request.results as! [VNRecognizedTextObservation]
 
-                var codes = [String]()
+                /// Key is MRZLine, value is bouningRect index
+                var lines = [String: Int]()
                 var boundingRects = [CGRect]()
+                var currentLineCount = 2
 
-                for visionResult in results {
-                    guard let line = visionResult.topCandidates(10).map({ $0.string }).first(where: {
-                        if let firstCode = codes.first {
-                            return firstCode.count == $0.count
-                        } else {
-                            return possibleLineLenth.contains($0.count)
-                        }
-                    }) else {
-                        self.delegate?.mrzScanner(self, didFindBoundingRects: [])
-                        self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
-                        return
+                for (index, visionResult) in results.enumerated() {
+                    if lines.count < currentLineCount,
+                       let mostLikelyLine = visionResult.topCandidates(10).map({ $0.string }).first(where: {
+                           if let firstLine = lines.first {
+                               return firstLine.key.count == $0.count
+                           } else {
+                               if let linesCount = lineLengthAndLinesCount[$0.count] {
+                                   currentLineCount = linesCount
+                                   return true
+                               } else {
+                                   return false
+                               }
+
+                           }
+                       }) {
+                        lines[mostLikelyLine] = index
                     }
 
                     boundingRects.append(visionResult.boundingBox)
-                    codes.append(line)
                 }
 
-                self.delegate?.mrzScanner(self, didFindBoundingRects: boundingRects)
-
-                guard let result = self.parser.parse(mrzLines: codes) else {
-                    self.delegate?.mrzScanner(self, didReceiveResult: .noValidMRZ)
-                    return
-                }
-
-                if isLive {
-                    self.liveResultTracker.track(result: result)
-                    guard let liveScanningResult = self.liveResultTracker.liveScanningResult else {
-                        fatalError("liveScanningResult must be set")
-                    }
-
-                    self.delegate?.mrzScanner(self, didReceiveResult: .liveSuccess(liveScanningResult))
+                if let result = self.parser.parse(mrzLines: lines.map { $0.key }) {
+                    let validLinesRects = lines.map { boundingRects[$0.value] }
+                    let invalidLinesRects = boundingRects.filter { validLinesRects.contains($0) }
+                    completionHandler(
+                        .success(
+                            .init(
+                                result: result,
+                                boundingRects: (validLinesRects, invalidLinesRects )
+                            )
+                        )
+                    )
                 } else {
-                    self.delegate?.mrzScanner(self, didReceiveResult: .imageSuccess(MRZResult: result))
+                    completionHandler(.failure(MRZScannerError.codeNotFound))
+                    return
                 }
             }
         })
     }
+}
+
+enum MRZScannerError: Error {
+    case codeNotFound
 }

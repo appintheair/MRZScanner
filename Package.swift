@@ -21,7 +21,7 @@ let package = Package(
             dependencies: ["MRZParser"]
         ),
         .testTarget(
-            name: "MRZScannerTests",
+            name: "MRZScannerPackageTests",
             dependencies: ["MRZScanner"]),
     ]
 )

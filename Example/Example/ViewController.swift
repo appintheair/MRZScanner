@@ -85,7 +85,6 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setup()
 
-        scanner.delegate = self
         checkCaptureDeviceAuthorization()
 
         // Set up preview view.
@@ -295,7 +294,21 @@ class ViewController: UIViewController {
         captureSession.startRunning()
     }
 
-    // MARK: - Bounding box drawing
+    // MARK: Bounding box drawing
+
+    private func showBoundingRects(valid validRects: [CGRect], invalid invalidRects: [CGRect]) {
+        let layer = self.previewView.videoPreviewLayer
+        self.removeBoxes()
+
+        for rect in invalidRects {
+            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
+            self.draw(rect: rect, color: UIColor.red.cgColor)
+        }
+        for rect in validRects {
+            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
+            self.draw(rect: rect, color: UIColor.green.cgColor)
+        }
+    }
 
     // Draw a box on screen. Must be called from main queue.
     private var boxLayer = [CAShapeLayer]()
@@ -316,43 +329,8 @@ class ViewController: UIViewController {
         }
         boxLayer.removeAll()
     }
-}
 
-// MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
-
-extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-    func captureOutput(
-        _ output: AVCaptureOutput,
-        didOutput sampleBuffer: CMSampleBuffer,
-        from connection: AVCaptureConnection
-    ) {
-        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), scanningIsEnabled {
-            scanner.scanFrame(
-                pixelBuffer: pixelBuffer,
-                orientation: textOrientation,
-                regionOfInterest: regionOfInterest
-            )
-        }
-    }
-}
-
-// MARK: - LiveMRZScannerDelegate
-
-extension ViewController: LiveMRZScannerDelegate {
-    func liveMRZScanner(_ scanner: LiveMRZScanner, didReceiveResult result: Result<ScanningResult<LiveScanningResult>, Error>) {
-        switch result {
-        case .success(let scanningResult):
-            guard scanningResult.result.accuracy > 2 else { return }
-            displayMRZResult(scanningResult.result.result)
-            showBoundingRects(valid: scanningResult.boundingRects.valid, invalid: scanningResult.boundingRects.invalid)
-        case .failure(let error):
-            displayError(error)
-        }
-    }
-
-    func liveMRZScanner(_ scanner: LiveMRZScanner, didFoundBoundingRects result: [CGRect]) {
-        showBoundingRects(valid: [], invalid: result)
-    }
+    // MARK: Alert displaying
 
     private func displayError(_ error: Error) {
         let alertController = UIAlertController(
@@ -410,18 +388,36 @@ extension ViewController: LiveMRZScannerDelegate {
             scanningIsEnabled = false
         }
     }
+}
 
-    private func showBoundingRects(valid validRects: [CGRect], invalid invalidRects: [CGRect]) {
-        let layer = self.previewView.videoPreviewLayer
-        self.removeBoxes()
+// MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
 
-        for rect in invalidRects {
-            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
-            self.draw(rect: rect, color: UIColor.red.cgColor)
-        }
-        for rect in validRects {
-            let rect = layer.layerRectConverted(fromMetadataOutputRect: rect.applying(visionToAVFTransform))
-            self.draw(rect: rect, color: UIColor.green.cgColor)
+extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(
+        _ output: AVCaptureOutput,
+        didOutput sampleBuffer: CMSampleBuffer,
+        from connection: AVCaptureConnection
+    ) {
+        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), scanningIsEnabled {
+            scanner.scanFrame(
+                pixelBuffer: pixelBuffer,
+                orientation: textOrientation,
+                regionOfInterest: regionOfInterest,
+                minimumTextHeight: 0.1,
+                foundBoundingRectsHandler: { [weak self] in
+                    self?.showBoundingRects(valid: [], invalid: $0)
+                },
+                completionHandler: { [weak self] result in
+                    switch result {
+                    case .success(let scanningResult):
+                        guard scanningResult.result.accuracy > 2 else { return }
+                        self?.displayMRZResult(scanningResult.result.result)
+                        self?.showBoundingRects(valid: scanningResult.boundingRects.valid, invalid:   scanningResult.boundingRects.invalid)
+                    case .failure(let error):
+                        self?.displayError(error)
+                    }
+                }
+            )
         }
     }
 }

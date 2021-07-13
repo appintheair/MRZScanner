@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "MRZScanner",
+    name: "DocumentScanner",
     platforms: [.iOS(.v13), .macOS(.v10_15)],
     products: [
         .library(
-            name: "MRZScanner",
-            targets: ["MRZScanner"]
+            name: "DocumentScanner",
+            targets: ["DocumentScanner"]
         ),
     ],
     dependencies: [
@@ -17,11 +17,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "MRZScanner",
+            name: "DocumentScanner",
             dependencies: ["MRZParser"]
         ),
         .testTarget(
-            name: "MRZScannerTests",
-            dependencies: ["MRZScanner"]),
+            name: "DocumentScannerTests",
+            dependencies: ["DocumentScanner"]),
     ]
 )

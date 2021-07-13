@@ -53,7 +53,7 @@ public struct ImageDocumentScanner {
 
                 let managerResult = manager.merge(
                     allBoundingRects: results.map { $0.key },
-                    validRectIndexes: validLines.map { $0.bouningRectIndex }
+                    validRectIndexes: validLines.map { $0.index }
                 )
 
                 completionHandler(.success(.init(result: parserResult, boundingRects: managerResult)))

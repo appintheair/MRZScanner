@@ -8,7 +8,7 @@
 typealias ValidatedResults = [ValidatedResult]
 struct ValidatedResult {
     let result: String
-    let bouningRectIndex: Int
+    let index: Int
 }
 
 protocol Validator {

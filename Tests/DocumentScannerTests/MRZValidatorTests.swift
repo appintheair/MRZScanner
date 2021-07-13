@@ -25,9 +25,9 @@ final class MRZValidatorTests: XCTestCase {
         ]
 
         let validatedResults: ValidatedResults = [
-            .init(result: "I<UTOD231458907<<<<<<<<<<<<<<<", bouningRectIndex: 0),
-            .init(result: "7408122F1204159UTO<<<<<<<<<<<6", bouningRectIndex: 1),
-            .init(result: "ERIKSSON<<ANNA<MARIA<<<<<<<<<<", bouningRectIndex: 2),
+            .init(result: "I<UTOD231458907<<<<<<<<<<<<<<<", index: 0),
+            .init(result: "7408122F1204159UTO<<<<<<<<<<<6", index: 1),
+            .init(result: "ERIKSSON<<ANNA<MARIA<<<<<<<<<<", index: 2),
         ]
 
         let expectedValidatedResult = validator.getValidatedResults(from: valueToValidate)
@@ -41,8 +41,8 @@ final class MRZValidatorTests: XCTestCase {
         ]
 
         let validatedResults: ValidatedResults = [
-            .init(result: "I<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<", bouningRectIndex: 0),
-            .init(result: "D231458907UTO7408122F1204159<<<<<<<6", bouningRectIndex: 1),
+            .init(result: "I<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<", index: 0),
+            .init(result: "D231458907UTO7408122F1204159<<<<<<<6", index: 1),
         ]
 
         let expectedValidatedResult = validator.getValidatedResults(from: valueToValidate)
@@ -57,8 +57,8 @@ final class MRZValidatorTests: XCTestCase {
         ]
 
         let validatedResults: ValidatedResults = [
-            .init(result: "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<", bouningRectIndex: 0),
-            .init(result: "L898902C36UTO7408122F1204159ZE184226B<<<<<10", bouningRectIndex: 1),
+            .init(result: "P<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<", index: 0),
+            .init(result: "L898902C36UTO7408122F1204159ZE184226B<<<<<10", index: 1),
         ]
 
         let expectedValidatedResult = validator.getValidatedResults(from: valueToValidate)
@@ -88,8 +88,76 @@ final class MRZValidatorTests: XCTestCase {
         ]
 
         let validatedResults: ValidatedResults = [
-            .init(result: "I<UTOD231458907<<<<sdasdas<<<<<<<<<<", bouningRectIndex: 0),
-            .init(result: "ERIKSSON<<A22A<MARIA<<<<<<<<<<", bouningRectIndex: 2),
+            .init(result: "I<UTOD231458907<<<<sdasdas<<<<<<<<<<", index: 0),
+            .init(result: "ERIKSSON<<A22A<MARIA<<<<<<<<<<", index: 2),
+        ]
+
+        let expectedValidatedResults = validator.getValidatedResults(from: valueToValidate)
+        XCTAssertEqual(expectedValidatedResults, validatedResults)
+    }
+
+    func testMRVADirtyValidation() {
+        let valueToValidate = [
+            [
+                "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<",
+                "a",
+                "sajkdhasjd2",
+                "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
+            ],
+            [
+                "7408122F1204159UTO<<<<<<<<<<1231231lk",
+                "a1203981239",
+                "L8988901C4XXX4009078F96121096ZE184226B<<<<<<",
+                "1ncz z,mxcnmzcnms,sanmandakln amsd,nasldn"
+            ]
+        ]
+
+        let validatedResults: ValidatedResults = [
+            .init(result: "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<<<<<<<<<", index: 0),
+            .init(result: "L8988901C4XXX4009078F96121096ZE184226B<<<<<<", index: 1),
+        ]
+
+        let expectedValidatedResults = validator.getValidatedResults(from: valueToValidate)
+        XCTAssertEqual(expectedValidatedResults, validatedResults)
+    }
+
+    func testMRVBDirtyValidation() {
+        let valueToValidate = [
+            [
+                "asdass",
+                "aasdjklasdlkasjdklasjdklasjd",
+                "sajkdhasjd2",
+                "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
+            ],
+            [
+                "asdas<<<<<<<<<<1231231lk",
+                "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<",
+                "L8988901C4XXX4009078F96121096ZE1ss84226B<<<<<<",
+                "1ncz z,mxcnmzcnms,sanmandakln aasdkalmsd,nasldn"
+            ],
+            [
+                "asdass",
+                "asdkljasdkjaslkdj",
+                "asdkasdkljasdlkjaslkdjaslkdjaslk",
+                "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
+            ],
+            [
+                "asdass",
+                "a",
+                "sajkdhasjd2",
+                "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
+            ],
+            [
+                "7408122F1204159UT<<<1231231lk",
+                "a1203981239",
+                "L8988901C4XXX4009078F9612109<<<<<<<<",
+                "1ncz z,mxcnmzcnms,sanmasssndakln amsd,nasldn"
+            ]
+        ]
+
+        let validatedResults: ValidatedResults = [
+            .init(result: "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<", index: 1),
+            .init(result: "L8988901C4XXX4009078F9612109<<<<<<<<", index: 4),
         ]
 
         let expectedValidatedResults = validator.getValidatedResults(from: valueToValidate)
@@ -99,6 +167,6 @@ final class MRZValidatorTests: XCTestCase {
 
 extension ValidatedResult: Equatable {
     public static func == (lhs: ValidatedResult, rhs: ValidatedResult) -> Bool {
-        lhs.result == rhs.result && lhs.bouningRectIndex == rhs.bouningRectIndex
+        lhs.result == rhs.result && lhs.index == rhs.index
     }
 }

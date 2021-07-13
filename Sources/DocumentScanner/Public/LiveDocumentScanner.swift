@@ -54,7 +54,7 @@ public struct LiveDocumentScanner {
                 tracker.track(result: parserResult, cleanOldAfter: cleanOldAfter)
                 guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
                 let managerResult = manager.merge(
-                    allBoundingRects: results.map { $0.key }, validRectIndexes: validLines.map { $0.bouningRectIndex }
+                    allBoundingRects: results.map { $0.key }, validRectIndexes: validLines.map { $0.index }
                 )
                 completionHandler(
                     .success(.init(

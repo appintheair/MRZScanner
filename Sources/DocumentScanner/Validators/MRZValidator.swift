@@ -7,6 +7,7 @@
 
 import MRZParser
 
+// TODO: At the moment passes once on the array, need to improve
 struct MRZValidator: Validator {
     func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults {
         let validLineLength = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
@@ -32,7 +33,7 @@ struct MRZValidator: Validator {
                 continue
             }
 
-            validLines.append(.init(result: mostLikelyLine, bouningRectIndex: index))
+            validLines.append(.init(result: mostLikelyLine, index: index))
         }
 
         return validLines

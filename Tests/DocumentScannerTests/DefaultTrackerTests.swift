@@ -10,7 +10,7 @@ import XCTest
 
 final class DefaultTrackerTests: XCTestCase {
     private var tracker: Tracker!
-    private let firstExampleMRZResult = ParsedResult(
+    private let firstExampleParsedResult = ParsedResult(
         format: .td3,
         documentType: .passport,
         countryCode: "",
@@ -25,7 +25,7 @@ final class DefaultTrackerTests: XCTestCase {
         optionalData2: nil
     )
 
-    private let secondExampleMRZResult = ParsedResult(
+    private let secondExampleParsedResult = ParsedResult(
         format: .td2,
         documentType: .id,
         countryCode: "",
@@ -48,63 +48,66 @@ final class DefaultTrackerTests: XCTestCase {
 
     func testOneExample() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 1)
+            Array(repeating: firstExampleParsedResult, count: 1)
         ])
     }
 
     func testTwoExamples() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 3),
-            Array(repeating: secondExampleMRZResult, count: 2),
+            Array(repeating: firstExampleParsedResult, count: 3),
+            Array(repeating: secondExampleParsedResult, count: 2),
         ])
     }
 
     func testTwoExamplesWithLongDetectionOne() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 60),
-            Array(repeating: secondExampleMRZResult, count: 31),
+            Array(repeating: firstExampleParsedResult, count: 60),
+            Array(repeating: secondExampleParsedResult, count: 31),
         ])
     }
 
     func testTwoExamplesWithLongDetectionTwo() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 60),
-            Array(repeating: secondExampleMRZResult, count: 25),
+            Array(repeating: firstExampleParsedResult, count: 60),
+            Array(repeating: secondExampleParsedResult, count: 25),
         ])
     }
 
     func testTwoExamplesWithLongDetectionThree() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 25),
-            Array(repeating: secondExampleMRZResult, count: 30),
+            Array(repeating: firstExampleParsedResult, count: 25),
+            Array(repeating: secondExampleParsedResult, count: 30),
         ])
     }
 
     func testReset() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 3),
-            Array(repeating: secondExampleMRZResult, count: 6),
+            Array(repeating: firstExampleParsedResult, count: 3),
+            Array(repeating: secondExampleParsedResult, count: 6),
         ])
 
         tracker.reset()
 
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleMRZResult, count: 9),
-            Array(repeating: secondExampleMRZResult, count: 1),
+            Array(repeating: firstExampleParsedResult, count: 9),
+            Array(repeating: secondExampleParsedResult, count: 1),
         ])
     }
 
     private func testSequentialAddition(arrayOfExamples: [[ParsedResult]]) {
         XCTAssertNil(tracker.bestResult)
 
+        /// One second
+        let cleanOldAfter = 1
+
         for examples in arrayOfExamples {
             for example in examples {
-                tracker.track(result: example, cleanOldAfter: 1)
+                tracker.track(result: example, cleanOldAfter: cleanOldAfter)
             }
         }
 
         var arrayOfExamples = arrayOfExamples
-        if let lastFrequentExamplesIndex = arrayOfExamples.lastIndex(where: { $0.count > 1 * 30 }) {
+        if let lastFrequentExamplesIndex = arrayOfExamples.lastIndex(where: { $0.count > cleanOldAfter * 30 }) {
             arrayOfExamples = Array(arrayOfExamples.suffix(from: lastFrequentExamplesIndex))
         }
 

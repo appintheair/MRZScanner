@@ -5,8 +5,12 @@
 //  Created by Roman Mazeev on 12.07.2021.
 //
 
-public typealias ValidatedResult = [String: Int]
+typealias ValidatedResults = [ValidatedResult]
+struct ValidatedResult {
+    let result: String
+    let bouningRectIndex: Int
+}
 
 protocol Validator {
-    func validLines(from possibleLines: [[String]]) -> ValidatedResult
+    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults
 }

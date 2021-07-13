@@ -8,12 +8,10 @@
 import MRZParser
 
 // TODO: Remove this line when `DocumentScanningResult` will be implemented
-typealias ParsedResult = MRZResult
+public typealias ParsedResult = MRZResult
 
 struct MRZLineParser: Parser {
-    public init() {}
-
-    public func parse(lines: [String]) -> ParsedResult? {
+    func parse(lines: [String]) -> ParsedResult? {
         MRZParser().parse(mrzLines: lines)
     }
 }

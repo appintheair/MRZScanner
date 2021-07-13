@@ -28,7 +28,7 @@ public struct ImageDocumentScanner {
         self.manager = manager
     }
 
-    func scan(
+    public func scan(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
@@ -45,15 +45,15 @@ public struct ImageDocumentScanner {
         ) {
             switch $0 {
             case .success(let results):
-                let validLines = validator.validLines(from: results.map { $0.value })
-                guard let parserResult = parser.parse(lines: validLines.map { $0.key }) else {
+                let validLines = validator.getValidatedResults(from: results.map { $0.value })
+                guard let parserResult = parser.parse(lines: validLines.map { $0.result }) else {
                     completionHandler(.failure(ImageScanningError.codeNotFound))
                     return
                 }
 
                 let managerResult = manager.merge(
                     allBoundingRects: results.map { $0.key },
-                    validRectIndexes: validLines.map { $0.value }
+                    validRectIndexes: validLines.map { $0.bouningRectIndex }
                 )
 
                 completionHandler(.success(.init(result: parserResult, boundingRects: managerResult)))

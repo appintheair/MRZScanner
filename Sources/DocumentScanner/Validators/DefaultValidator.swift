@@ -8,20 +8,20 @@
 import MRZParser
 
 struct MRZValidator: Validator {
-    func validLines(from possibleLines: [[String]]) -> ValidatedResult {
-        let lineLengthAndLinesCount = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
+    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults {
+        let validLineLength = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
 
         /// Key is MRZLine, value is bouningRect index
-        var validLines = [String: Int]()
-        var currentLineCount = 2
+        var validLines = ValidatedResults()
+        var currentLinesCount = 2
 
         for (index, lines) in possibleLines.enumerated() {
-            guard validLines.count < currentLineCount, let mostLikelyLine = lines.first(where: {
-                if let firstLine = lines.first {
-                    return firstLine.count == $0.count
+            guard let mostLikelyLine = lines.first(where: {
+                if let firstLine = validLines.first, index < currentLinesCount {
+                    return firstLine.result.count == $0.count
                 } else {
-                    if let linesCount = lineLengthAndLinesCount[$0.count] {
-                        currentLineCount = linesCount
+                    if let linesCount = validLineLength[$0.count] {
+                        currentLinesCount = linesCount
                         return true
                     } else {
                         return false
@@ -32,7 +32,7 @@ struct MRZValidator: Validator {
                 continue
             }
 
-            validLines[mostLikelyLine] = index
+            validLines.append(.init(result: mostLikelyLine, bouningRectIndex: index))
         }
 
         return validLines

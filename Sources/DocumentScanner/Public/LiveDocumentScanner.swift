@@ -49,12 +49,12 @@ public struct LiveDocumentScanner {
         ) {
             switch $0 {
             case .success(let results):
-                let validLines = validator.validLines(from: results.map { $0.value })
-                guard let parserResult = parser.parse(lines: validLines.map { $0.key }) else { return }
+                let validLines = validator.getValidatedResults(from: results.map { $0.value })
+                guard let parserResult = parser.parse(lines: validLines.map { $0.result }) else { return }
                 tracker.track(result: parserResult, cleanOldAfter: cleanOldAfter)
                 guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
                 let managerResult = manager.merge(
-                    allBoundingRects: results.map { $0.key }, validRectIndexes: validLines.map { $0.value }
+                    allBoundingRects: results.map { $0.key }, validRectIndexes: validLines.map { $0.bouningRectIndex }
                 )
                 completionHandler(
                     .success(.init(

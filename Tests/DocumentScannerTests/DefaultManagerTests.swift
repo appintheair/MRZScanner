@@ -1,13 +1,16 @@
 //
-//  DefaultManagerTests.swift
+//  ManagerTests.swift
 //  
 //
 //  Created by Roman Mazeev on 13.07.2021.
 //
 
+import XCTest
 @testable import DocumentScanner
 
-final class DefaultManagerTests: ManagerTests<DefaultManager> {
+class DefaultManagerTests: XCTestCase {
+    private var manager: Manager!
+
     override func setUp() {
         super.setUp()
 

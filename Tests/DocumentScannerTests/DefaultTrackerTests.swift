@@ -1,5 +1,5 @@
 //
-//  TrackerTests.swift
+//  DefaultTrackerTests.swift
 //  
 //
 //  Created by Roman Mazeev on 13.07.2021.
@@ -8,9 +8,8 @@
 import XCTest
 @testable import DocumentScanner
 
-class TrackerTests<T: Tracker>: XCTestCase {
-    var tracker: T!
-
+final class DefaultTrackerTests: XCTestCase {
+    private var tracker: Tracker!
     private let firstExampleMRZResult = ParsedResult(
         format: .td3,
         documentType: .passport,
@@ -40,6 +39,12 @@ class TrackerTests<T: Tracker>: XCTestCase {
         optionalData: nil,
         optionalData2: nil
     )
+
+    override func setUp() {
+        super.setUp()
+
+        tracker = DefaultTracker()
+    }
 
     func testOneExample() {
         testSequentialAddition(arrayOfExamples: [

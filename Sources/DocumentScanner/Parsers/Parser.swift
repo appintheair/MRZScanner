@@ -5,8 +5,7 @@
 //  Created by Roman Mazeev on 13.07.2021.
 //
 
-// TODO: Add protocol `DocumentScanningResult` to use not only MRZ
-//typealias ParsedResult = DocumentScanningResult
+// TODO: Add `ParsedResult` to use not only MRZ
 
 protocol Parser {
     func parse(lines: [String]) -> ParsedResult?

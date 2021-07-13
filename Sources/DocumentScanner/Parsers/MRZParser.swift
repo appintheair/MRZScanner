@@ -7,7 +7,7 @@
 
 import MRZParser
 
-// TODO: Remove this line when `DocumentScanningResult` will be implemented
+// TODO: Remove this line when `ParsedResult` struct will be implemented
 public typealias ParsedResult = MRZResult
 
 struct MRZLineParser: Parser {

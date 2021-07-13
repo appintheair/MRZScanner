@@ -1,5 +1,5 @@
 //
-//  VisionScanner.swift
+//  VisionRecognizer.swift
 //  
 //
 //  Created by Roman Mazeev on 13.07.2021.
@@ -7,18 +7,18 @@
 
 import Vision
 
-struct VisionScanner: Scanner {
-    func scan(
+struct VisionTextRecognizer: TextRecognizer {
+    func recognize(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,
         recognitionLevel: RecognitionLevel,
-        requestCompletionHandler: @escaping (Result<ScannedResult, Error>) -> Void
+        completionHandler: @escaping (Result<TextRecognizerResults, Error>) -> Void
     ) {
         let request = VNRecognizeTextRequest { request, error in
             guard error == nil else {
-                requestCompletionHandler(.failure(error!))
+                completionHandler(.failure(error!))
                 return
             }
 
@@ -29,7 +29,7 @@ struct VisionScanner: Scanner {
                 result[visionResult.boundingBox] = visionResult.topCandidates(10).map { $0.string }
             }
 
-            requestCompletionHandler(.success(result))
+            completionHandler(.success(result))
         }
 
         if let regionOfInterest = regionOfInterest {
@@ -48,7 +48,7 @@ struct VisionScanner: Scanner {
             do {
                 try imageRequestHandler.perform([request])
             } catch {
-                requestCompletionHandler(.failure(error))
+                completionHandler(.failure(error))
             }
         }
     }

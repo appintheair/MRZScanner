@@ -22,6 +22,59 @@ final class ScannerTests: XCTestCase {
         )
     }
 
-    func testSingle() {
+    func testSingleEmpty() {
+        scanSingle { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(_):
+                return
+            }
+        }
+    }
+
+    func testLiveEmpty() {
+        scanLive { rects in
+            XCTFail()
+        } completion: { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(_):
+                return
+            }
+        }
+
+    }
+
+    private func scanSingle(completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void) {
+        scanner.scanSingle(
+            pixelBuffer: createExampleSampleBuffer(),
+            orientation: .up,
+            regionOfInterest: nil,
+            minimumTextHeight: nil,
+            completionHandler: completion
+        )
+    }
+
+    private func scanLive(
+        rectsHandler: (([CGRect]) -> Void)?,
+        completion: @escaping (Result<LiveDocuemntScanningResult, Error>) -> Void
+    ) {
+        scanner.scanLive(
+            pixelBuffer: createExampleSampleBuffer(),
+            orientation: .up,
+            regionOfInterest: nil,
+            minimumTextHeight: nil,
+            cleanOldAfter: nil,
+            foundBoundingRectsHandler: rectsHandler,
+            completionHandler: completion
+        )
+    }
+
+    private func createExampleSampleBuffer() -> CVPixelBuffer {
+        var pixelBuffer : CVPixelBuffer? = nil
+        CVPixelBufferCreate(kCFAllocatorDefault, 100, 100, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
+        return pixelBuffer!
     }
 }

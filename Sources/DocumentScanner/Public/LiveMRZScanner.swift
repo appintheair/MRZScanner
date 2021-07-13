@@ -1,5 +1,5 @@
 //
-//  LiveDocumentScanner.swift
+//  LiveMRZScanner.swift
 //  
 //
 //  Created by Roman Mazeev on 12.07.2021.
@@ -7,7 +7,7 @@
 
 import CoreImage
 
-public struct LiveDocumentScanner: MRZDefaultScannerService {
+public struct LiveMRZScanner: MRZDefaultScannerService {
     public func scanFrame(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,

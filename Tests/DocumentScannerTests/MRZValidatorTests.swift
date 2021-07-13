@@ -49,6 +49,12 @@ final class MRZValidatorTests: XCTestCase {
         XCTAssertEqual(expectedValidatedResult, validatedResults)
     }
 
+    func testEmptyValidation() {
+        let validatedResults: ValidatedResults = []
+
+        let expectedValidatedResult = validator.getValidatedResults(from: [])
+        XCTAssertEqual(expectedValidatedResult, validatedResults)
+    }
 
     func testTD3CleanValidation() {
         let valueToValidate = [
@@ -130,9 +136,9 @@ final class MRZValidatorTests: XCTestCase {
                 "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
             ],
             [
-                "asdas<<<<<<<<<<1231231lk",
+                "asdas<<<<<<a<<<<1231231lk",
                 "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<",
-                "L8988901C4XXX4009078F96121096ZE1ss84226B<<<<<<",
+                "L8988901C4XXXsd4009078F96121096ZE1ss84226B<<<<<<",
                 "1ncz z,mxcnmzcnms,sanmandakln aasdkalmsd,nasldn"
             ],
             [
@@ -142,22 +148,22 @@ final class MRZValidatorTests: XCTestCase {
                 "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
             ],
             [
+                "7408122F120415aaaaaaaaUT<<<231231lk",
+                "a1203981239",
+                "L8988901C4XXX4009078F9612109<<<<<<<<",
+                "1ncz z,mxscnmzcnms,sanmasssndakln amsd,nasldn"
+            ],
+            [
                 "asdass",
                 "a",
                 "sajkdhasjd2",
                 "asdkjashdjhasdkjhdjksahdjkahsjdkh21321=391i3o1312890diwsad"
             ],
-            [
-                "7408122F1204159UT<<<1231231lk",
-                "a1203981239",
-                "L8988901C4XXX4009078F9612109<<<<<<<<",
-                "1ncz z,mxcnmzcnms,sanmasssndakln amsd,nasldn"
-            ]
         ]
 
         let validatedResults: ValidatedResults = [
             .init(result: "V<UTOERIKSSON<<ANNA<MARIA<<<<<<<<<<<", index: 1),
-            .init(result: "L8988901C4XXX4009078F9612109<<<<<<<<", index: 4),
+            .init(result: "L8988901C4XXX4009078F9612109<<<<<<<<", index: 3),
         ]
 
         let expectedValidatedResults = validator.getValidatedResults(from: valueToValidate)

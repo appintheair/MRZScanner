@@ -27,15 +27,12 @@ struct MRZValidator: Validator {
                     } else {
                         return false
                     }
-
                 }
             }) else {
                 continue
             }
-
             validLines.append(.init(result: mostLikelyLine, index: index))
         }
-
         return validLines
     }
 }

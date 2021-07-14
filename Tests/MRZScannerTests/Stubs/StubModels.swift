@@ -7,7 +7,7 @@
 
 import Foundation
 
-import DocumentScanner
+import MRZScanner
 
 struct StubModels {
     static let firstExampleParsedResult = ParsedResult(

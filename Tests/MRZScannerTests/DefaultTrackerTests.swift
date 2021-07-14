@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import DocumentScanner
+@testable import MRZScanner
 
 final class DefaultTrackerTests: XCTestCase {
     private var tracker: Tracker!

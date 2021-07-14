@@ -6,10 +6,10 @@
 //
 
 import XCTest
-@testable import DocumentScanner
+@testable import MRZScanner
 
 final class ScannerTests: XCTestCase {
-    private var scanner: DocumentScanner.Scanner {
+    private var scanner: MRZScanner.Scanner {
         .init(textRecognizer: textRecognizer, validator: validator, parser: parser, tracker: tracker)
     }
     private var textRecognizer = StubTextRecognizer()

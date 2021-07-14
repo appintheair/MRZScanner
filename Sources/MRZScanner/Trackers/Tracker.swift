@@ -7,5 +7,4 @@
 
 protocol Tracker {
     func isResultStable(_ result: ParsedResult) -> Bool
-    func reset()
 }

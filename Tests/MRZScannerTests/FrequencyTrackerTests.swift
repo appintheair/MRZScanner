@@ -54,14 +54,4 @@ final class FrequencyTrackerTests: XCTestCase {
 
         XCTAssertTrue(tracker.isResultStable(StubModels.firstParsedResultStub))
     }
-
-    func testReset() {
-        for _ in 0 ..< frequency + 1  {
-            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
-        }
-
-        tracker.reset()
-
-        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
-    }
 }

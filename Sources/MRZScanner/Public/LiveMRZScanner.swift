@@ -65,8 +65,4 @@ public struct LiveMRZScanner {
             }
         )
     }
-
-    public func resetFrequency() {
-        tracker.reset()
-    }
 }

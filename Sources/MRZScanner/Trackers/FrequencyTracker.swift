@@ -19,12 +19,16 @@ final class FrequencyTracker: Tracker {
             return false
         }
 
-        guard seenResultFrequency + 1 < frequency else { return true }
+        guard seenResultFrequency + 1 < frequency else {
+            seenResults = [:]
+            return true
+        }
+
         seenResults[result]? += 1
         return false
     }
 
     func reset() {
-        seenResults = [:]
+
     }
 }

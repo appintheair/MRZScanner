@@ -8,6 +8,8 @@
 import CoreImage
 
 public struct LiveMRZScanner: MRZDefaultScannerService {
+    public init() {}
+
     public func scanFrame(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,

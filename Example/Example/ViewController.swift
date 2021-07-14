@@ -23,7 +23,6 @@ class ViewController: UIViewController {
 
             if !scanningIsEnabled {
                 removeBoxes()
-                scanner.resetLiveScanningSession()
             }
         }
     }

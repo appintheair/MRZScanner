@@ -46,7 +46,6 @@ final class ScannerTests: XCTestCase {
         let expectation = XCTestExpectation()
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        parser.parsedResult = StubModels.firstParsedResultStub
         scan(scanningType: .single) { result in
             switch result {
             case .success(let scanningResult):

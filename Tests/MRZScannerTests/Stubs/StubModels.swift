@@ -5,7 +5,7 @@
 //  Created by Roman Mazeev on 14.07.2021.
 //
 
-import MRZScanner
+@testable import MRZScanner
 import CoreImage
 
 struct StubModels {
@@ -48,6 +48,7 @@ struct StubModels {
     )
 
     static let textRecognizerResults = [CGRect(): [""]]
+    static let validatedResults: [ValidatedResult] = [.init(result: "", index: 0)]
 
     static var sampleBufferStub: CVPixelBuffer {
         var pixelBuffer : CVPixelBuffer? = nil

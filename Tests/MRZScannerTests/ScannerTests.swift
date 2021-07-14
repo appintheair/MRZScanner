@@ -15,12 +15,14 @@ final class ScannerTests: XCTestCase {
     private var textRecognizer: StubTextRecognizer!
     private var parser: StubParser!
     private var tracker: StubTracker!
+    private var validator: StubValidator!
 
     override func setUp() {
         super.setUp()
         textRecognizer = StubTextRecognizer()
         parser = StubParser()
         tracker = StubTracker()
+        validator = StubValidator()
     }
 
     // MARK: Single
@@ -28,6 +30,7 @@ final class ScannerTests: XCTestCase {
     func testaSingleComplete() {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        validator.validatedResults = StubModels.validatedResults
         parser.parsedResult = StubModels.firstParsedResult
         scan(scanningType: .single) { result in
             switch result {

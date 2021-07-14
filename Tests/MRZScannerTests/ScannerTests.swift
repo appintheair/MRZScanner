@@ -10,7 +10,7 @@ import XCTest
 
 final class ScannerTests: XCTestCase {
     private var scanner: MRZScanner.Scanner {
-        .init(textRecognizer: textRecognizer, validator: StubValidator(), parser: parser)
+        .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
     }
     private var textRecognizer: StubTextRecognizer!
     private var parser: StubParser!

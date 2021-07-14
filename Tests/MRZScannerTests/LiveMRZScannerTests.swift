@@ -45,7 +45,25 @@ final class LiveMRZScannerTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
-    func testTrackerFail() {
+    func testFailure() {
+        textRecognizer.recognizeResult = .failure(StubError.stub)
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+        parser.parsedResult = StubModels.firstParsedResultStub
+        tracker.isResultStable = false
+        let expectation = XCTestExpectation()
+        liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is StubError)
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    func testTrackerFailure() {
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstParsedResultStub

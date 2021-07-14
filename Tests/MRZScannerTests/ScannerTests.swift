@@ -47,13 +47,13 @@ final class ScannerTests: XCTestCase {
 
     func testaSingleRecognizeError() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .failure(TestError.testError)
+        textRecognizer.recognizeResult = .failure(StubError.stub)
         scan(scanningType: .single) { result in
             switch result {
             case .success:
                 XCTFail()
             case .failure(let error):
-                XCTAssertTrue(error is TestError)
+                XCTAssertTrue(error is StubError)
                 expectation.fulfill()
             }
         }
@@ -104,7 +104,7 @@ final class ScannerTests: XCTestCase {
 
     func testLiveRecognizeError() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .failure(TestError.testError)
+        textRecognizer.recognizeResult = .failure(StubError.stub)
         scan(scanningType: .live) { rects in
             XCTFail()
         } completion: { result in
@@ -112,7 +112,7 @@ final class ScannerTests: XCTestCase {
             case .success:
                 XCTFail()
             case .failure(let error):
-                XCTAssertTrue(error is TestError)
+                XCTAssertTrue(error is StubError)
                 expectation.fulfill()
             }
         }
@@ -158,8 +158,3 @@ final class ScannerTests: XCTestCase {
         )
     }
 }
-
-enum TestError: Error {
-    case testError
-}
-

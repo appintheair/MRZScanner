@@ -51,8 +51,7 @@ public struct LiveMRZScanner {
             completionHandler: { result in
                 switch result {
                 case .success(let scanningResult):
-                    tracker.track(result: scanningResult.result, cleanOldAfter: cleanOldAfter)
-                    guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
+                    let bestResult = tracker.track(result: scanningResult.result, cleanOldAfter: cleanOldAfter)
                     completionHandler(
                         .success(.init(
                             result: .init(

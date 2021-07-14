@@ -24,7 +24,7 @@ final class LiveMRZScannerTests: XCTestCase {
         textRecognizer = StubTextRecognizer()
         validator = StubValidator()
         parser = StubParser()
-        tracker = StubTracker()
+        tracker = StubTracker(trackedResult: (StubModels.firstParsedResultStub, 1))
     }
 
     func testSuccess() {

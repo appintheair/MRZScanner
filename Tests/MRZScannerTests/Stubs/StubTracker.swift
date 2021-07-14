@@ -8,9 +8,8 @@
 @testable import MRZScanner
 
 struct StubTracker: Tracker {
-    var trackedResult: TrackedResult?
-    var bestResult: TrackedResult? { trackedResult }
+    var trackedResult: TrackedResult
 
-    func track(result: ParsedResult, cleanOldAfter: Int?) {}
+    func track(result: ParsedResult, cleanOldAfter: Int?) -> TrackedResult { trackedResult }
     func reset() {}
 }

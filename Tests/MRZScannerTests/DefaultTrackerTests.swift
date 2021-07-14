@@ -66,14 +66,13 @@ final class DefaultTrackerTests: XCTestCase {
     }
 
     private func testSequentialAddition(arrayOfExamples: [[ParsedResult]]) {
-        XCTAssertNil(tracker.bestResult)
-
         /// One second
         let cleanOldAfter = 1
 
+        var lastTrackedResult: TrackedResult?
         for examples in arrayOfExamples {
             for example in examples {
-                tracker.track(result: example, cleanOldAfter: cleanOldAfter)
+                lastTrackedResult = tracker.track(result: example, cleanOldAfter: cleanOldAfter)
             }
         }
 
@@ -86,12 +85,9 @@ final class DefaultTrackerTests: XCTestCase {
         let mostProbableExamples = sortedExamples.first
         XCTAssertNotNil(mostProbableExamples)
 
-        let mostProbableExample = mostProbableExamples!.first
-        checkResult(mostProbableExample, accuracy: mostProbableExamples!.count)
-    }
+        let mostProbableExample = mostProbableExamples?.first
 
-    private func checkResult(_ result: ParsedResult?, accuracy: Int) {
-        XCTAssertEqual(tracker.bestResult?.result, result)
-        XCTAssertEqual(tracker.bestResult?.accuracy, accuracy)
+        XCTAssertEqual(mostProbableExample, lastTrackedResult?.result)
+        XCTAssertEqual(mostProbableExamples?.count, lastTrackedResult?.accuracy)
     }
 }

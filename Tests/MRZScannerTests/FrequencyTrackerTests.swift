@@ -1,5 +1,5 @@
 //
-//  DefaultTrackerTests.swift
+//  FrequencyTrackerTests.swift
 //  
 //
 //  Created by Roman Mazeev on 13.07.2021.
@@ -8,9 +8,9 @@
 import XCTest
 @testable import MRZScanner
 
-final class DefaultTrackerTests: XCTestCase {
+final class FrequencyTrackerTests: XCTestCase {
     private var tracker: Tracker!
-    private let frequency = 4
+    private let frequency = 5
 
     override func setUp() {
         super.setUp()
@@ -52,7 +52,16 @@ final class DefaultTrackerTests: XCTestCase {
             _ = tracker.isResultStable(StubModels.firstParsedResultStub)
         }
 
-
         XCTAssertTrue(tracker.isResultStable(StubModels.firstParsedResultStub))
+    }
+
+    func testReset() {
+        for _ in 0 ..< frequency + 1  {
+            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
+        }
+
+        tracker.reset()
+
+        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
     }
 }

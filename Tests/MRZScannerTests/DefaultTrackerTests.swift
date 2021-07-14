@@ -19,49 +19,49 @@ final class DefaultTrackerTests: XCTestCase {
 
     func testOneExample() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 1)
+            Array(repeating: StubModels.firstParsedResultStub, count: 1)
         ])
     }
 
     func testTwoExamples() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 3),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 2),
+            Array(repeating: StubModels.firstParsedResultStub, count: 3),
+            Array(repeating: StubModels.secondParsedResultStub, count: 2),
         ])
     }
 
     func testTwoExamplesWithLongDetectionOne() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 60),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 31),
+            Array(repeating: StubModels.firstParsedResultStub, count: 60),
+            Array(repeating: StubModels.secondParsedResultStub, count: 31),
         ])
     }
 
     func testTwoExamplesWithLongDetectionTwo() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 60),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 25),
+            Array(repeating: StubModels.firstParsedResultStub, count: 60),
+            Array(repeating: StubModels.secondParsedResultStub, count: 25),
         ])
     }
 
     func testTwoExamplesWithLongDetectionThree() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 25),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 30),
+            Array(repeating: StubModels.firstParsedResultStub, count: 25),
+            Array(repeating: StubModels.secondParsedResultStub, count: 30),
         ])
     }
 
     func testReset() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 3),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 6),
+            Array(repeating: StubModels.firstParsedResultStub, count: 3),
+            Array(repeating: StubModels.secondParsedResultStub, count: 6),
         ])
 
         tracker.reset()
 
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: StubModels.firstExampleParsedResult, count: 9),
-            Array(repeating: StubModels.secondExampleParsedResult, count: 1),
+            Array(repeating: StubModels.firstParsedResultStub, count: 9),
+            Array(repeating: StubModels.secondParsedResultStub, count: 1),
         ])
     }
 

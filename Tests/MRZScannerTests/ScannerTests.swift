@@ -46,11 +46,11 @@ final class ScannerTests: XCTestCase {
         let expectation = XCTestExpectation()
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        parser.parsedResult = StubModels.firstExampleParsedResult
+        parser.parsedResult = StubModels.firstParsedResultStub
         scan(scanningType: .single) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result)
+                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -82,12 +82,12 @@ final class ScannerTests: XCTestCase {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
-        parser.parsedResult = StubModels.firstExampleParsedResult
-        tracker.trackedResult = (StubModels.firstExampleParsedResult, 1)
+        parser.parsedResult = StubModels.firstParsedResultStub
+        tracker.trackedResult = (StubModels.firstParsedResultStub, 1)
         scan(scanningType: .live) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result)
+                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -103,19 +103,13 @@ final class ScannerTests: XCTestCase {
         ) -> Void) {
         scanner.scan(
             scanningType: scanningType,
-            pixelBuffer: createExampleSampleBuffer(),
+            pixelBuffer: StubModels.sampleBufferStub,
             orientation: .up,
             regionOfInterest: nil,
             minimumTextHeight: nil,
             recognitionLevel: scanningType == .live ? .fast : .accurate,
             completionHandler: completion
         )
-    }
-
-    private func createExampleSampleBuffer() -> CVPixelBuffer {
-        var pixelBuffer : CVPixelBuffer? = nil
-        CVPixelBufferCreate(kCFAllocatorDefault, 100, 100, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
-        return pixelBuffer!
     }
 }
 

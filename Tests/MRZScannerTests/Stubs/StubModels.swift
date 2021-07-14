@@ -1,16 +1,15 @@
 //
-//  File.swift
+//  StubModels.swift
 //  
 //
 //  Created by Roman Mazeev on 14.07.2021.
 //
 
-import Foundation
-
 import MRZScanner
+import CoreImage
 
 struct StubModels {
-    static let firstExampleParsedResult = ParsedResult(
+    static let firstParsedResultStub = ParsedResult(
         format: .td3,
         documentType: .passport,
         countryCode: "",
@@ -25,7 +24,7 @@ struct StubModels {
         optionalData2: nil
     )
 
-    static let secondExampleParsedResult = ParsedResult(
+    static let secondParsedResultStub = ParsedResult(
         format: .td2,
         documentType: .id,
         countryCode: "",
@@ -39,4 +38,10 @@ struct StubModels {
         optionalData: nil,
         optionalData2: nil
     )
+
+    static var sampleBufferStub: CVPixelBuffer {
+        var pixelBuffer : CVPixelBuffer? = nil
+        CVPixelBufferCreate(kCFAllocatorDefault, 100, 100, kCVPixelFormatType_32BGRA, nil, &pixelBuffer)
+        return pixelBuffer!
+    }
 }

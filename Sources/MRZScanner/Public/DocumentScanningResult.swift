@@ -7,11 +7,6 @@
 
 import CoreGraphics
 
-public struct LiveDocuemntScanningResult {
-    public let result: DocumentScanningResult<ParsedResult>
-    public let accuracy: Int
-}
-
 public typealias ScannedBoundingRects = (valid: [CGRect], invalid: [CGRect])
 
 public struct DocumentScanningResult<T> {

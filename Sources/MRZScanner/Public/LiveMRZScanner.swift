@@ -17,11 +17,12 @@ public struct LiveMRZScanner {
     private let parser: Parser
     private let tracker: Tracker
 
-    public init() {
+    /// - Parameter frequency: Number of times the result was encountered
+    public init(frequency: Int = 2) {
         textRecognizer = VisionTextRecognizer()
         validator = MRZValidator()
         parser = MRZLineParser()
-        tracker = DefaultTracker()
+        tracker = FrequencyTracker(frequency: frequency)
     }
 
     init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser, tracker: Tracker) {
@@ -36,9 +37,8 @@ public struct LiveMRZScanner {
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
         minimumTextHeight: Float? = nil,
-        cleanOldAfter: Int? = 1,
         foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
-        completionHandler: @escaping (Result<LiveDocuemntScanningResult, Error>) -> Void
+        completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
     ) {
         scanner.scan(
             scanningType: .live,
@@ -51,20 +51,22 @@ public struct LiveMRZScanner {
             completionHandler: { result in
                 switch result {
                 case .success(let scanningResult):
-                    let bestResult = tracker.track(result: scanningResult.result, cleanOldAfter: cleanOldAfter)
+                    guard tracker.isResultStable(scanningResult.result) else { return }
+
                     completionHandler(
                         .success(.init(
-                            result: .init(
-                                result: bestResult.result,
-                                boundingRects: scanningResult.boundingRects
-                            ),
-                            accuracy: bestResult.accuracy
+                            result: scanningResult.result,
+                            boundingRects: scanningResult.boundingRects
                         ))
                     )
                 case .failure(let error):
                     completionHandler(.failure(error))
-            }
+                }
             }
         )
+    }
+
+    public func resetFrequency() {
+        tracker.reset()
     }
 }

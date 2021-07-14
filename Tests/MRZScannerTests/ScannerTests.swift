@@ -22,7 +22,7 @@ final class ScannerTests: XCTestCase {
         textRecognizer = StubTextRecognizer()
         validator = StubValidator()
         parser = StubParser()
-        tracker = StubTracker(trackedResult: (StubModels.firstParsedResultStub, 1))
+        tracker = StubTracker()
     }
 
     // MARK: Single
@@ -90,7 +90,6 @@ final class ScannerTests: XCTestCase {
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstParsedResultStub
-        tracker.trackedResult = (StubModels.firstParsedResultStub, 1)
         scan(scanningType: .live) { result in
             switch result {
             case .success(let scanningResult):
@@ -147,7 +146,7 @@ final class ScannerTests: XCTestCase {
         scanningType: MRZScanner.Scanner.ScanningType,
         rectsHandler: (([CGRect]) -> Void)? = nil,
         completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>
-        ) -> Void) {
+    ) -> Void) {
         scanner.scan(
             scanningType: scanningType,
             pixelBuffer: StubModels.sampleBufferStub,

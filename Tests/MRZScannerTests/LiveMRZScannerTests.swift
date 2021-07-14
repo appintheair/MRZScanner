@@ -29,7 +29,6 @@ final class LiveMRZScannerTests: XCTestCase {
 
     func testSuccess() {
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstParsedResultStub
         let trackedResult = (StubModels.firstParsedResultStub, 3)
         let expectation = XCTestExpectation()
@@ -47,7 +46,6 @@ final class LiveMRZScannerTests: XCTestCase {
 
     func testFailure() {
         textRecognizer.recognizeResult = .failure(StubError.stub)
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstParsedResultStub
         tracker.isResultStable = false
         let expectation = XCTestExpectation()
@@ -65,7 +63,6 @@ final class LiveMRZScannerTests: XCTestCase {
 
     func testTrackerFailure() {
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstParsedResultStub
         tracker.isResultStable = false
         let expectation = XCTestExpectation()

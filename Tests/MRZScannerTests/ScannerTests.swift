@@ -30,7 +30,7 @@ final class ScannerTests: XCTestCase {
     func testaSingleComplete() {
         let expectation = XCTestExpectation()
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
+        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"], CGRect(): ["wewewwe"]])
         parser.parsedResult = StubModels.firstParsedResultStub
         scan(scanningType: .single) { result in
             switch result {

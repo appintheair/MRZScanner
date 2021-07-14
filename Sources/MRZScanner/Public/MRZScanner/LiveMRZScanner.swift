@@ -7,28 +7,28 @@
 
 import CoreImage
 
-public struct LiveMRZScanner {
-    private var scanner: Scanner {
-        Scanner(textRecognizer: textRecognizer, validator: validator, parser: parser)
-    }
-
-    private let textRecognizer: TextRecognizer
-    private let validator: Validator
-    private let parser: Parser
-    private let tracker: Tracker
+public struct LiveMRZScanner: ScannerService, LiveScanner {
+    var scanner: DefaultScanner
+    var tracker: Tracker
 
     /// - Parameter frequency: Number of times the result was encountered
     public init(frequency: Int = 2) {
-        textRecognizer = VisionTextRecognizer()
-        validator = MRZValidator()
-        parser = MRZLineParser()
+        scanner = DefaultScanner(
+            textRecognizer: VisionTextRecognizer(),
+            validator: MRZValidator(),
+            parser: MRZLineParser()
+        )
+
         tracker = FrequencyTracker(frequency: frequency)
     }
 
     init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser, tracker: Tracker) {
-        self.textRecognizer = textRecognizer
-        self.validator = validator
-        self.parser = parser
+        scanner = DefaultScanner(
+            textRecognizer: textRecognizer,
+            validator: validator,
+            parser: parser
+        )
+
         self.tracker = tracker
     }
 

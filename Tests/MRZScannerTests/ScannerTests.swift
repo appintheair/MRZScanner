@@ -9,7 +9,7 @@ import XCTest
 @testable import MRZScanner
 
 final class ScannerTests: XCTestCase {
-    private var scanner: MRZScanner.Scanner {
+    private var scanner: DefaultScanner {
         .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
     }
     private var textRecognizer: StubTextRecognizer!
@@ -139,7 +139,7 @@ final class ScannerTests: XCTestCase {
     }
 
     private func scan(
-        scanningType: MRZScanner.Scanner.ScanningType,
+        scanningType: DefaultScanner.ScanningType,
         rectsHandler: (([CGRect]) -> Void)? = nil,
         completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>
     ) -> Void) {

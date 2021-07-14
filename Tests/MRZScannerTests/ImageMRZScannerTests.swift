@@ -37,19 +37,4 @@ final class ImageMRZScannerTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 10.0)
     }
-
-    func testFailure() {
-        let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .failure(StubError.stub)
-        imageMRZScanner.scan(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
-            switch result {
-            case .success:
-                XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error is StubError)
-                expectation.fulfill()
-            }
-        }
-        wait(for: [expectation], timeout: 10.0)
-    }
 }

@@ -1,13 +1,13 @@
 //
-//  Scanner.swift
+//  DefaultScanner.swift
 //  
 //
-//  Created by Roman Mazeev on 13.07.2021.
+//  Created by Roman Mazeev on 14.07.2021.
 //
 
 import CoreImage
 
-struct Scanner {
+struct DefaultScanner: Scanner {
     enum ScanningError: Error {
         case codeNotFound
     }
@@ -17,9 +17,9 @@ struct Scanner {
         case single
     }
 
-    private let textRecognizer: TextRecognizer
-    private let validator: Validator
-    private var parser: Parser
+    var textRecognizer: TextRecognizer
+    var validator: Validator
+    var parser: Parser
 
     init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser) {
         self.textRecognizer = textRecognizer
@@ -97,3 +97,4 @@ struct Scanner {
         return (validRects, invalidRects)
     }
 }
+

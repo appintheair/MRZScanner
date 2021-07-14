@@ -9,18 +9,26 @@ import MRZScanner
 import CoreImage
 
 struct StubModels {
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(abbreviation: "GMT+0:00")
+        return formatter
+    }()
+
     static let firstParsedResultStub = ParsedResult(
         format: .td3,
         documentType: .passport,
-        countryCode: "",
-        surnames: "",
-        givenNames: "",
-        documentNumber: nil,
-        nationalityCountryCode: "",
-        birthdate: nil,
-        sex: .male,
-        expiryDate: nil,
-        optionalData: nil,
+        countryCode: "UTO",
+        surnames: "ERIKSSON",
+        givenNames: "ANNA MARIA",
+        documentNumber: "L898902C3",
+        nationalityCountryCode: "UTO",
+        birthdate:  dateFormatter.date(from: "740812")!,
+        sex: .female,
+        expiryDate: dateFormatter.date(from: "120415")!,
+        optionalData: "ZE184226B",
         optionalData2: nil
     )
 

@@ -8,5 +8,8 @@
 @testable import DocumentScanner
 
 struct StubParser: Parser {
-    func parse(lines: [String]) -> ParsedResult? { nil }
+    var parsedResult: ParsedResult?
+    func parse(lines: [String]) -> ParsedResult? {
+        parsedResult
+    }
 }

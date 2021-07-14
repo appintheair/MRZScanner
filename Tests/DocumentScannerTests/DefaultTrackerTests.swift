@@ -10,35 +10,6 @@ import XCTest
 
 final class DefaultTrackerTests: XCTestCase {
     private var tracker: Tracker!
-    private let firstExampleParsedResult = ParsedResult(
-        format: .td3,
-        documentType: .passport,
-        countryCode: "",
-        surnames: "",
-        givenNames: "",
-        documentNumber: nil,
-        nationalityCountryCode: "",
-        birthdate: nil,
-        sex: .male,
-        expiryDate: nil,
-        optionalData: nil,
-        optionalData2: nil
-    )
-
-    private let secondExampleParsedResult = ParsedResult(
-        format: .td2,
-        documentType: .id,
-        countryCode: "",
-        surnames: "",
-        givenNames: "",
-        documentNumber: nil,
-        nationalityCountryCode: "",
-        birthdate: nil,
-        sex: .male,
-        expiryDate: nil,
-        optionalData: nil,
-        optionalData2: nil
-    )
 
     override func setUp() {
         super.setUp()
@@ -48,49 +19,49 @@ final class DefaultTrackerTests: XCTestCase {
 
     func testOneExample() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 1)
+            Array(repeating: StubModels.firstExampleParsedResult, count: 1)
         ])
     }
 
     func testTwoExamples() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 3),
-            Array(repeating: secondExampleParsedResult, count: 2),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 3),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 2),
         ])
     }
 
     func testTwoExamplesWithLongDetectionOne() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 60),
-            Array(repeating: secondExampleParsedResult, count: 31),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 60),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 31),
         ])
     }
 
     func testTwoExamplesWithLongDetectionTwo() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 60),
-            Array(repeating: secondExampleParsedResult, count: 25),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 60),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 25),
         ])
     }
 
     func testTwoExamplesWithLongDetectionThree() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 25),
-            Array(repeating: secondExampleParsedResult, count: 30),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 25),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 30),
         ])
     }
 
     func testReset() {
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 3),
-            Array(repeating: secondExampleParsedResult, count: 6),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 3),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 6),
         ])
 
         tracker.reset()
 
         testSequentialAddition(arrayOfExamples: [
-            Array(repeating: firstExampleParsedResult, count: 9),
-            Array(repeating: secondExampleParsedResult, count: 1),
+            Array(repeating: StubModels.firstExampleParsedResult, count: 9),
+            Array(repeating: StubModels.secondExampleParsedResult, count: 1),
         ])
     }
 

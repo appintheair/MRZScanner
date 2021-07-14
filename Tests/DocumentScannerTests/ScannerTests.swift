@@ -9,42 +9,90 @@ import XCTest
 @testable import DocumentScanner
 
 final class ScannerTests: XCTestCase {
-    private var scanner: DocumentScanner.Scanner!
+    private var scanner: DocumentScanner.Scanner {
+        .init(textRecognizer: textRecognizer, validator: validator, parser: parser, tracker: tracker)
+    }
+    private var textRecognizer = StubTextRecognizer()
+    private var validator = StubValidator()
+    private var parser = StubParser()
+    private var tracker = StubTracker()
 
     override func setUp() {
         super.setUp()
-
-        scanner = DocumentScanner.Scanner(
-            textRecognizer: StubTextRecognizer(),
-            validator: StubValidator(),
-            parser: StubParser(),
-            tracker: StubTracker()
-        )
+        textRecognizer = StubTextRecognizer()
+        validator = StubValidator()
+        parser = StubParser()
+        tracker = StubTracker()
     }
 
-    func testSingleEmpty() {
+    // MARK: Single
+
+    func testaSingleRecognizeError() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .failure(TestError.testError)
         scanSingle { result in
             switch result {
             case .success:
                 XCTFail()
-            case .failure(_):
-                return
+            case .failure(let error):
+                XCTAssertTrue(error is TestError)
+                expectation.fulfill()
             }
         }
+        wait(for: [expectation], timeout: 10.0)
     }
 
-    func testLiveEmpty() {
+    func testaSingleComplete() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .success([CGRect(): [""]])
+        parser.parsedResult = StubModels.firstExampleParsedResult
+        scanSingle { result in
+            switch result {
+            case .success(let scanningResult):
+                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result)
+                expectation.fulfill()
+            case .failure:
+                XCTFail()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    // MARK: Live
+
+    func testaLiveRecognizeError() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .failure(TestError.testError)
         scanLive { rects in
             XCTFail()
         } completion: { result in
             switch result {
             case .success:
                 XCTFail()
-            case .failure(_):
-                return
+            case .failure(let error):
+                XCTAssertTrue(error is TestError)
+                expectation.fulfill()
             }
         }
+        wait(for: [expectation], timeout: 10.0)
+    }
 
+    func testLiveComplete() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .success([CGRect(): [""]])
+        parser.parsedResult = StubModels.firstExampleParsedResult
+        tracker.trackedResult = (StubModels.firstExampleParsedResult, 1)
+        scanLive { _ in
+        } completion: { result in
+            switch result {
+            case .success(let scanningResult):
+                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result.result)
+                expectation.fulfill()
+            case .failure:
+                XCTFail()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
     }
 
     private func scanSingle(completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void) {
@@ -78,3 +126,8 @@ final class ScannerTests: XCTestCase {
         return pixelBuffer!
     }
 }
+
+enum TestError: Error {
+    case testError
+}
+

@@ -8,7 +8,9 @@
 @testable import DocumentScanner
 
 struct StubTracker: Tracker {
-    var bestResult: TrackedResult? { nil }
+    var trackedResult: TrackedResult?
+    var bestResult: TrackedResult? { trackedResult }
+
     func track(result: ParsedResult, cleanOldAfter: Int?) {}
     func reset() {}
 }

@@ -8,5 +8,8 @@
 @testable import DocumentScanner
 
 struct StubValidator: Validator {
-    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults { [] }
+    var validatedResults: ValidatedResults = []
+    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults {
+        validatedResults
+    }
 }

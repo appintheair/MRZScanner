@@ -9,6 +9,7 @@
 import CoreImage
 
 struct StubTextRecognizer: TextRecognizer {
+    var recognizeResult: Result<TextRecognizerResults, Error>?
     func recognize(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
@@ -16,7 +17,9 @@ struct StubTextRecognizer: TextRecognizer {
         minimumTextHeight: Float?,
         recognitionLevel: RecognitionLevel,
         completionHandler: @escaping (Result<TextRecognizerResults, Error>) -> Void
-    ) {}
-
-    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults { [] }
+    ) {
+        if let recognizeResult = recognizeResult {
+            completionHandler(recognizeResult)
+        }
+    }
 }

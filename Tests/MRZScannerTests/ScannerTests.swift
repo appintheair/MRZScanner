@@ -27,6 +27,23 @@ final class ScannerTests: XCTestCase {
 
     // MARK: Single
 
+    func testaSingleComplete() {
+        let expectation = XCTestExpectation()
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
+        parser.parsedResult = StubModels.firstParsedResultStub
+        scan(scanningType: .single) { result in
+            switch result {
+            case .success(let scanningResult):
+                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
+                expectation.fulfill()
+            case .failure:
+                XCTFail()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
     func testaSingleRecognizeError() {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .failure(TestError.testError)
@@ -42,40 +59,30 @@ final class ScannerTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
-    func testaSingleComplete() {
+    func testSingleParserError() {
         let expectation = XCTestExpectation()
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        scan(scanningType: .single) { result in
-            switch result {
-            case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
-                expectation.fulfill()
-            case .failure:
-                XCTFail()
-            }
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 10.0)
-    }
 
-    // MARK: Live
-
-    func testaLiveRecognizeError() {
-        let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .failure(TestError.testError)
-        scan(scanningType: .live) { rects in
+        scan(scanningType: .single) { rects in
             XCTFail()
         } completion: { result in
             switch result {
             case .success:
                 XCTFail()
-            case .failure(let error):
-                XCTAssertTrue(error is TestError)
+            case .failure:
                 expectation.fulfill()
             }
         }
+
         wait(for: [expectation], timeout: 10.0)
     }
+
+    // MARK: Live
 
     func testLiveComplete() {
         let expectation = XCTestExpectation()
@@ -92,6 +99,46 @@ final class ScannerTests: XCTestCase {
                 XCTFail()
             }
         }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    func testLiveRecognizeError() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .failure(TestError.testError)
+        scan(scanningType: .live) { rects in
+            XCTFail()
+        } completion: { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is TestError)
+                expectation.fulfill()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    func testLiveParserError() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            expectation.fulfill()
+        }
+
+        scan(scanningType: .live) { rects in
+            XCTFail()
+        } completion: { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure:
+                XCTFail()
+            }
+        }
+
         wait(for: [expectation], timeout: 10.0)
     }
 

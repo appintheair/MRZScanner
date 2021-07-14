@@ -11,23 +11,27 @@ struct Scanner {
     private let textRecognizer: TextRecognizer
     private let validator: Validator
     private var parser: Parser
-    private var tracker: Tracker
 
-    init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser, tracker: Tracker) {
+    init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser) {
         self.textRecognizer = textRecognizer
         self.validator = validator
         self.parser = parser
-        self.tracker = tracker
     }
 
-    func scanLive(
+    enum ScanningType {
+        case live
+        case single
+    }
+
+    func scan(
+        scanningType: ScanningType,
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
         minimumTextHeight: Float? = nil,
-        cleanOldAfter: Int? = 1,
+        recognitionLevel: RecognitionLevel,
         foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
-        completionHandler: @escaping (Result<LiveDocuemntScanningResult, Error>) -> Void
+        completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
     ) {
         textRecognizer.recognize(
             pixelBuffer: pixelBuffer,
@@ -38,56 +42,20 @@ struct Scanner {
         ) {
             switch $0 {
             case .success(let results):
-                DispatchQueue.main.async {
-                    foundBoundingRectsHandler?(results.map { $0.key })
+                if scanningType == .live {
+                    DispatchQueue.main.async {
+                        foundBoundingRectsHandler?(results.map { $0.key })
+                    }
                 }
-                let parsedAndValidatedResults = getParsedAndValidatedResults(from: results)
-                guard let parsedResult = parsedAndValidatedResults.0 else { return }
-                tracker.track(result: parsedResult, cleanOldAfter: cleanOldAfter)
-                guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
 
-                DispatchQueue.main.async {
-                    completionHandler(
-                        .success(.init(
-                            result: .init(
-                                result: bestResult.result,
-                                boundingRects: getScannedBoundingRects(
-                                    from: results,
-                                    validLines: parsedAndValidatedResults.1
-                                )
-                            ),
-                            accuracy: bestResult.accuracy
-                        ))
-                    )
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    completionHandler(.failure(error))
-                }
-            }
-        }
-    }
+                let validatedResult = validator.getValidatedResults(from: results.map { $0.value })
+                guard let parsedResult = parser.parse(lines: validatedResult.map { $0.result }) else {
+                    if scanningType == .single {
+                        DispatchQueue.main.async {
+                            completionHandler(.failure(SingleScanningError.codeNotFound))
+                        }
+                    }
 
-    func scanSingle(
-        pixelBuffer: CVPixelBuffer,
-        orientation: CGImagePropertyOrientation,
-        regionOfInterest: CGRect? = nil,
-        minimumTextHeight: Float? = nil,
-        recognitionLevel: RecognitionLevel = .accurate,
-        completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
-    ) {
-        textRecognizer.recognize(
-            pixelBuffer: pixelBuffer,
-            orientation: orientation,
-            regionOfInterest: regionOfInterest,
-            minimumTextHeight: minimumTextHeight,
-            recognitionLevel: recognitionLevel
-        ) {
-            switch $0 {
-            case .success(let results):
-                let parsedAndValidatedResults = getParsedAndValidatedResults(from: results)
-                guard let parsedResult = parsedAndValidatedResults.0 else {
-                    completionHandler(.failure(SingleScanningError.codeNotFound))
                     return
                 }
 
@@ -97,7 +65,7 @@ struct Scanner {
                             result: parsedResult,
                             boundingRects: getScannedBoundingRects(
                                 from: results,
-                                validLines: parsedAndValidatedResults.1
+                                validLines: validatedResult
                             )
                         )
                     ))
@@ -108,15 +76,6 @@ struct Scanner {
                 }
             }
         }
-    }
-
-    private func getParsedAndValidatedResults(
-        from results: TextRecognizerResults
-    ) -> (ParsedResult?, ValidatedResults) {
-        let validLines = validator.getValidatedResults(from: results.map { $0.value })
-        let parsedResult = parser.parse(lines: validLines.map { $0.result })
-
-        return (parsedResult, validLines)
     }
 
     private func getScannedBoundingRects(

@@ -16,8 +16,7 @@ extension MRZDefaultScannerService {
         Scanner(
             textRecognizer: VisionTextRecognizer(),
             validator: MRZValidator(),
-            parser: MRZLineParser(),
-            tracker: DefaultTracker()
+            parser: MRZLineParser()
         )
     }
 }

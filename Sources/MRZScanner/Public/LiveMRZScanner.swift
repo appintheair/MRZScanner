@@ -8,7 +8,15 @@
 import CoreImage
 
 public struct LiveMRZScanner: MRZDefaultScannerService {
-    public init() {}
+    private let tracker: Tracker
+
+    public init() {
+        self.tracker = DefaultTracker()
+    }
+
+    init(tracker: Tracker) {
+        self.tracker = tracker
+    }
 
     public func scanFrame(
         pixelBuffer: CVPixelBuffer,
@@ -19,14 +27,32 @@ public struct LiveMRZScanner: MRZDefaultScannerService {
         foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
         completionHandler: @escaping (Result<LiveDocuemntScanningResult, Error>) -> Void
     ) {
-        scanner.scanLive(
+        scanner.scan(
+            scanningType: .live,
             pixelBuffer: pixelBuffer,
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
-            cleanOldAfter: cleanOldAfter,
+            recognitionLevel: .fast,
             foundBoundingRectsHandler: foundBoundingRectsHandler,
-            completionHandler: completionHandler
+            completionHandler: { result in
+                switch result {
+                case .success(let scanningResult):
+                    tracker.track(result: scanningResult.result, cleanOldAfter: cleanOldAfter)
+                    guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
+                    completionHandler(
+                        .success(.init(
+                            result: .init(
+                                result: bestResult.result,
+                                boundingRects: scanningResult.boundingRects
+                            ),
+                            accuracy: bestResult.accuracy
+                        ))
+                    )
+                case .failure(let error):
+                    completionHandler(.failure(error))
+            }
+            }
         )
     }
 }

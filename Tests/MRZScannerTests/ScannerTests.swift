@@ -10,7 +10,7 @@ import XCTest
 
 final class ScannerTests: XCTestCase {
     private var scanner: MRZScanner.Scanner {
-        .init(textRecognizer: textRecognizer, validator: validator, parser: parser, tracker: tracker)
+        .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
     }
     private var textRecognizer = StubTextRecognizer()
     private var validator = StubValidator()
@@ -30,7 +30,7 @@ final class ScannerTests: XCTestCase {
     func testaSingleRecognizeError() {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .failure(TestError.testError)
-        scanSingle { result in
+        scan(scanningType: .single) { result in
             switch result {
             case .success:
                 XCTFail()
@@ -47,7 +47,7 @@ final class ScannerTests: XCTestCase {
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
         parser.parsedResult = StubModels.firstExampleParsedResult
-        scanSingle { result in
+        scan(scanningType: .single) { result in
             switch result {
             case .success(let scanningResult):
                 XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result)
@@ -64,7 +64,7 @@ final class ScannerTests: XCTestCase {
     func testaLiveRecognizeError() {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .failure(TestError.testError)
-        scanLive { rects in
+        scan(scanningType: .live) { rects in
             XCTFail()
         } completion: { result in
             switch result {
@@ -84,11 +84,10 @@ final class ScannerTests: XCTestCase {
         validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstExampleParsedResult
         tracker.trackedResult = (StubModels.firstExampleParsedResult, 1)
-        scanLive { _ in
-        } completion: { result in
+        scan(scanningType: .live) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result.result)
+                XCTAssertEqual(StubModels.firstExampleParsedResult, scanningResult.result)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -97,27 +96,18 @@ final class ScannerTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
 
-    private func scanSingle(completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void) {
-        scanner.scanSingle(
+    private func scan(
+        scanningType: MRZScanner.Scanner.ScanningType,
+        rectsHandler: (([CGRect]) -> Void)? = nil,
+        completion: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>
+        ) -> Void) {
+        scanner.scan(
+            scanningType: scanningType,
             pixelBuffer: createExampleSampleBuffer(),
             orientation: .up,
             regionOfInterest: nil,
             minimumTextHeight: nil,
-            completionHandler: completion
-        )
-    }
-
-    private func scanLive(
-        rectsHandler: (([CGRect]) -> Void)?,
-        completion: @escaping (Result<LiveDocuemntScanningResult, Error>) -> Void
-    ) {
-        scanner.scanLive(
-            pixelBuffer: createExampleSampleBuffer(),
-            orientation: .up,
-            regionOfInterest: nil,
-            minimumTextHeight: nil,
-            cleanOldAfter: nil,
-            foundBoundingRectsHandler: rectsHandler,
+            recognitionLevel: scanningType == .live ? .fast : .accurate,
             completionHandler: completion
         )
     }

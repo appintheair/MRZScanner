@@ -8,8 +8,6 @@
 import CoreImage
 
 public struct ImageMRZScanner: MRZDefaultScannerService {
-    public init() {}
-
     public func scan(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
@@ -18,7 +16,8 @@ public struct ImageMRZScanner: MRZDefaultScannerService {
         recognitionLevel: RecognitionLevel = .accurate,
         completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
     ) {
-        scanner.scanSingle(
+        scanner.scan(
+            scanningType: .single,
             pixelBuffer: pixelBuffer,
             orientation: orientation,
             regionOfInterest: regionOfInterest,

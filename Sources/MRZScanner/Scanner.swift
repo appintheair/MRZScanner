@@ -38,6 +38,7 @@ struct Scanner {
         ) {
             switch $0 {
             case .success(let results):
+                foundBoundingRectsHandler?(results.map { $0.key })
                 let parsedAndValidatedResults = getParsedAndValidatedResults(from: results)
                 guard let parsedResult = parsedAndValidatedResults.0 else { return }
                 tracker.track(result: parsedResult, cleanOldAfter: cleanOldAfter)

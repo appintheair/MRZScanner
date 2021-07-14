@@ -340,10 +340,9 @@ class ViewController: UIViewController {
         addAlertActionAndPresent(alertController)
     }
 
-    private func displayScanningResult(_ result: ParserResult) {
+    private func displayScanningResult(_ result: ParsedResult) {
         var birthdateString: String?
         var expiryDateString: String?
-
 
         if let birthdate = result.birthdate {
             birthdateString = dateFormatter.string(from: birthdate)
@@ -408,10 +407,10 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                 completionHandler: { [weak self] result in
                     switch result {
                     case .success(let scanningResult):
-                        guard scanningResult.result.accuracy > 2 else { return }
+                        guard scanningResult.accuracy > 2 else { return }
                         self?.displayScanningResult(scanningResult.result.result)
-                        self?.showBoundingRects(valid: scanningResult.boundingRects.valid,
-                                                invalid: scanningResult.boundingRects.invalid)
+                        self?.showBoundingRects(valid: scanningResult.result.boundingRects.valid,
+                                                invalid: scanningResult.result.boundingRects.invalid)
                     case .failure(let error):
                         self?.displayError(error)
                     }

@@ -25,38 +25,10 @@ dependencies: [
 *The library has an SPM [dependency](https://github.com/appintheair/MRZParser) for MRZ code parsing.*
 
 ## Usage
-**First, we need to initialize the [MRZScanner](https://github.com/appintheair/MRZScanner/tree/develop/Sources/MRZScanner/MRZScanner.swift#L21)**
+Currently there are 2 scanners available, `ImageMRZScanner` and `LiveMRZScanner`.
+The first is used to scan the MRZ code on a single image, and the second in real-time scanning.
 
-```swift
-let scanner = MRZScanner()
-```
-
-**Next, we need to add a [MRZScannerDelegate](https://github.com/appintheair/MRZScanner/tree/develop/Sources/MRZScanner/MRZScanner.swift#L11) protocol match and implement the following delegate methods**
-
-```swift
-public protocol MRZScannerDelegate: AnyObject {
-    // 1
-    func mrzScanner(_ scanner: MRZScanner, didReceiveResult result: ScanningResult)
-    // 2
-    func mrzScanner(_ scanner: MRZScanner, didFindBoundingRects rects: [CGRect])
-}
-```
-1. Passes the [ScanningResult](https://github.com/appintheair/MRZScanner/tree/develop/Sources/MRZScanner/MRZScanner.swift#L21) when scanning is complete.
-2. Passes the boundaries of the possible mrz code lines
-
-**To start scanning you need to call [scan](https://github.com/appintheair/MRZScanner/tree/develop/Sources/MRZScanner/MRZScanner.swift#L45)**
-
-```swift
-scanner.scan(pixelBuffer: pixelBuffer,
-             orientation: orientation,
-             regionOfInterest: regionOfInterest)
-```
-
-**To reset the tracked data need to call [reset](https://github.com/appintheair/MRZScanner/tree/develop/Sources/MRZScanner/ResultTracker.swift#L55)**
-
-```swift
-scanner.tracker.reset()
-```
+To scan, you need to call the `scanFrame` / `scan` method of the scanner.
 
 ## License
 The library is distributed under the MIT [LICENSE](https://opensource.org/licenses/MIT).

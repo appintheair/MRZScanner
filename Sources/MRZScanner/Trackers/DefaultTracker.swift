@@ -26,9 +26,7 @@ final class DefaultTracker: Tracker {
 
         frameIndex += 1
 
-        guard let mostProbableResult = seenMRZResults.sorted(by: { $0.value.count > $1.value.count }).first else {
-            return (result, 1)
-        }
+        let mostProbableResult = seenMRZResults.sorted(by: { $0.value.count > $1.value.count }).first!
 
         return (mostProbableResult.key, mostProbableResult.value.count)
     }

@@ -27,8 +27,8 @@ struct Scanner {
         scanningType: ScanningType,
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,
-        regionOfInterest: CGRect? = nil,
-        minimumTextHeight: Float? = nil,
+        regionOfInterest: CGRect?,
+        minimumTextHeight: Float?,
         recognitionLevel: RecognitionLevel,
         foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
         completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void

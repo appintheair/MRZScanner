@@ -407,10 +407,11 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
                 completionHandler: { [weak self] result in
                     switch result {
                     case .success(let scanningResult):
-                        guard scanningResult.accuracy > 2 else { return }
-                        self?.displayScanningResult(scanningResult.result.result)
-                        self?.showBoundingRects(valid: scanningResult.result.boundingRects.valid,
-                                                invalid: scanningResult.result.boundingRects.invalid)
+                        self?.displayScanningResult(scanningResult.result)
+                        self?.showBoundingRects(
+                            valid: scanningResult.boundingRects.valid,
+                            invalid: scanningResult.boundingRects.invalid
+                        )
                     case .failure(let error):
                         self?.displayError(error)
                     }

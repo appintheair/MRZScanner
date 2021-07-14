@@ -10,7 +10,7 @@ import XCTest
 
 final class FrequencyTrackerTests: XCTestCase {
     private var tracker: Tracker!
-    private let frequency = 5
+    private let frequency = 8
 
     override func setUp() {
         super.setUp()
@@ -40,18 +40,18 @@ final class FrequencyTrackerTests: XCTestCase {
             _ = tracker.isResultStable(StubModels.firstParsedResultStub)
         }
 
-        for _ in 0 ..< 4 {
+        for _ in 0 ..< 2 {
             _ = tracker.isResultStable(StubModels.secondParsedResultStub)
         }
 
-        for _ in 0 ..< 5  {
+        for _ in 0 ..< 3  {
             _ = tracker.isResultStable(StubModels.firstParsedResultStub)
         }
 
         for _ in 0 ..< 1  {
-            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
+            _ = tracker.isResultStable(StubModels.secondParsedResultStub)
         }
 
-        XCTAssertTrue(tracker.isResultStable(StubModels.firstParsedResultStub))
+        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
     }
 }

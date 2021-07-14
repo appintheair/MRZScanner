@@ -94,8 +94,6 @@ final class MRZValidatorTests: XCTestCase {
         ]
 
         let validatedResults: ValidatedResults = [
-            .init(result: "I<UTOD231458907<<<<sdasdas<<<<<<<<<<", index: 0),
-            .init(result: "ERIKSSON<<A22A<MARIA<<<<<<<<<<", index: 2),
         ]
 
         let expectedValidatedResults = validator.getValidatedResults(from: valueToValidate)

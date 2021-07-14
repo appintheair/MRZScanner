@@ -5,33 +5,38 @@
 //  Created by Roman Mazeev on 13.07.2021.
 //
 
-import MRZParser
-
-// TODO: At the moment passes once on the array, need to improve
 struct MRZValidator: Validator {
-    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults {
-        let validLineLength = [TD2.lineLength: 2, TD3.lineLength: 2, TD1.lineLength : 3]
+    private struct MRZCode {
+        let lineLength: Int
+        let linesCount: Int
+    }
 
+    private let validMRZCodes = [
+        // TD1
+        MRZCode(lineLength: 30, linesCount: 3),
+        // TD2
+        MRZCode(lineLength: 36, linesCount: 2),
+        // TD3
+        MRZCode(lineLength: 44, linesCount: 2)
+    ]
+
+    func getValidatedResults(from possibleLines: [[String]]) -> ValidatedResults {
         /// Key is MRZLine, value is bouningRect index
         var validLines = ValidatedResults()
-        var currentLinesCount = 2
 
-        for (index, lines) in possibleLines.enumerated() {
-            guard let mostLikelyLine = lines.first(where: {
-                if let firstLine = validLines.first, index < currentLinesCount {
-                    return firstLine.result.count == $0.count
-                } else {
-                    if let linesCount = validLineLength[$0.count] {
-                        currentLinesCount = linesCount
-                        return true
-                    } else {
-                        return false
-                    }
-                }
-            }) else {
-                continue
+        for validMRZCode in validMRZCodes {
+            guard validLines.count < validMRZCode.linesCount else { break }
+            for (index, lines) in possibleLines.enumerated() {
+                guard validLines.count < validMRZCode.linesCount else { break }
+                guard let mostLikelyLine = lines.first(where: {
+                    $0.count == validMRZCode.lineLength
+                }) else { continue }
+                validLines.append(.init(result: mostLikelyLine, index: index))
             }
-            validLines.append(.init(result: mostLikelyLine, index: index))
+
+            if validLines.count != validMRZCode.linesCount {
+                validLines = []
+            }
         }
         return validLines
     }

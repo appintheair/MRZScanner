@@ -38,26 +38,32 @@ struct Scanner {
         ) {
             switch $0 {
             case .success(let results):
-                foundBoundingRectsHandler?(results.map { $0.key })
+                DispatchQueue.main.async {
+                    foundBoundingRectsHandler?(results.map { $0.key })
+                }
                 let parsedAndValidatedResults = getParsedAndValidatedResults(from: results)
                 guard let parsedResult = parsedAndValidatedResults.0 else { return }
                 tracker.track(result: parsedResult, cleanOldAfter: cleanOldAfter)
                 guard let bestResult = tracker.bestResult else { fatalError("bestResult should be here") }
 
-                completionHandler(
-                    .success(.init(
-                        result: .init(
-                            result: bestResult.result,
-                            boundingRects: getScannedBoundingRects(
-                                from: results,
-                                validLines: parsedAndValidatedResults.1
-                            )
-                        ),
-                        accuracy: bestResult.accuracy
-                    ))
-                )
+                DispatchQueue.main.async {
+                    completionHandler(
+                        .success(.init(
+                            result: .init(
+                                result: bestResult.result,
+                                boundingRects: getScannedBoundingRects(
+                                    from: results,
+                                    validLines: parsedAndValidatedResults.1
+                                )
+                            ),
+                            accuracy: bestResult.accuracy
+                        ))
+                    )
+                }
             case .failure(let error):
-                completionHandler(.failure(error))
+                DispatchQueue.main.async {
+                    completionHandler(.failure(error))
+                }
             }
         }
     }
@@ -85,14 +91,21 @@ struct Scanner {
                     return
                 }
 
-                completionHandler(.success(
-                    .init(
-                        result: parsedResult,
-                        boundingRects: getScannedBoundingRects(from: results, validLines: parsedAndValidatedResults.1)
-                    )
-                ))
+                DispatchQueue.main.async {
+                    completionHandler(.success(
+                        .init(
+                            result: parsedResult,
+                            boundingRects: getScannedBoundingRects(
+                                from: results,
+                                validLines: parsedAndValidatedResults.1
+                            )
+                        )
+                    ))
+                }
             case .failure(let error):
-                completionHandler(.failure(error))
+                DispatchQueue.main.async {
+                    completionHandler(.failure(error))
+                }
             }
         }
     }

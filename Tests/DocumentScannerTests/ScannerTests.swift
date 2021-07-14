@@ -44,8 +44,8 @@ final class ScannerTests: XCTestCase {
 
     func testaSingleComplete() {
         let expectation = XCTestExpectation()
-        validator.validatedResults = [.init(result: "", index: 0)]
-        textRecognizer.recognizeResult = .success([CGRect(): [""]])
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
         parser.parsedResult = StubModels.firstExampleParsedResult
         scanSingle { result in
             switch result {
@@ -80,8 +80,8 @@ final class ScannerTests: XCTestCase {
 
     func testLiveComplete() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .success([CGRect(): [""]])
-        validator.validatedResults = [.init(result: "", index: 0)]
+        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
+        validator.validatedResults = [.init(result: "asdasd", index: 0)]
         parser.parsedResult = StubModels.firstExampleParsedResult
         tracker.trackedResult = (StubModels.firstExampleParsedResult, 1)
         scanLive { _ in

@@ -27,8 +27,4 @@ final class FrequencyTracker: Tracker {
         seenResults[result]? += 1
         return false
     }
-
-    func reset() {
-
-    }
 }

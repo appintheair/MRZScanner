@@ -8,6 +8,15 @@
 import CoreImage
 
 struct Scanner {
+    enum ScanningError: Error {
+        case codeNotFound
+    }
+
+    enum ScanningType {
+        case live
+        case single
+    }
+
     private let textRecognizer: TextRecognizer
     private let validator: Validator
     private var parser: Parser
@@ -16,11 +25,6 @@ struct Scanner {
         self.textRecognizer = textRecognizer
         self.validator = validator
         self.parser = parser
-    }
-
-    enum ScanningType {
-        case live
-        case single
     }
 
     func scan(
@@ -52,10 +56,9 @@ struct Scanner {
                 guard let parsedResult = parser.parse(lines: validatedResult.map { $0.result }) else {
                     if scanningType == .single {
                         DispatchQueue.main.async {
-                            completionHandler(.failure(SingleScanningError.codeNotFound))
+                            completionHandler(.failure(ScanningError.codeNotFound))
                         }
                     }
-
                     return
                 }
 
@@ -92,9 +95,5 @@ struct Scanner {
             .map { $0.element }
 
         return (validRects, invalidRects)
-    }
-
-    private enum SingleScanningError: Error {
-        case codeNotFound
     }
 }

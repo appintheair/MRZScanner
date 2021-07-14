@@ -7,7 +7,27 @@
 
 import CoreImage
 
-public struct ImageMRZScanner: MRZDefaultScannerService {
+public struct ImageMRZScanner {
+    private var scanner: Scanner {
+        Scanner(textRecognizer: textRecognizer, validator: validator, parser: parser)
+    }
+
+    private let textRecognizer: TextRecognizer
+    private let validator: Validator
+    private let parser: Parser
+
+    public init() {
+        textRecognizer = VisionTextRecognizer()
+        validator = MRZValidator()
+        parser = MRZLineParser()
+    }
+
+    init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser) {
+        self.textRecognizer = textRecognizer
+        self.validator = validator
+        self.parser = parser
+    }
+
     public func scan(
         pixelBuffer: CVPixelBuffer,
         orientation: CGImagePropertyOrientation,

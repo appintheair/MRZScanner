@@ -12,10 +12,10 @@ final class ScannerTests: XCTestCase {
     private var scanner: MRZScanner.Scanner {
         .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
     }
-    private var textRecognizer = StubTextRecognizer()
-    private var validator = StubValidator()
-    private var parser = StubParser()
-    private var tracker = StubTracker()
+    private var textRecognizer: StubTextRecognizer!
+    private var validator: StubValidator!
+    private var parser: StubParser!
+    private var tracker: StubTracker!
 
     override func setUp() {
         super.setUp()

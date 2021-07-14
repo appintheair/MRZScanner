@@ -7,14 +7,27 @@
 
 import CoreImage
 
-public struct LiveMRZScanner: MRZDefaultScannerService {
+public struct LiveMRZScanner {
+    private var scanner: Scanner {
+        Scanner(textRecognizer: textRecognizer, validator: validator, parser: parser)
+    }
+
+    private let textRecognizer: TextRecognizer
+    private let validator: Validator
+    private let parser: Parser
     private let tracker: Tracker
 
     public init() {
-        self.tracker = DefaultTracker()
+        textRecognizer = VisionTextRecognizer()
+        validator = MRZValidator()
+        parser = MRZLineParser()
+        tracker = DefaultTracker()
     }
 
-    init(tracker: Tracker) {
+    init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser, tracker: Tracker) {
+        self.textRecognizer = textRecognizer
+        self.validator = validator
+        self.parser = parser
         self.tracker = tracker
     }
 

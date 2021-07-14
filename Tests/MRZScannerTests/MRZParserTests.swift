@@ -25,7 +25,7 @@ final class MRZParserTests: XCTestCase {
             ]
         )
 
-        XCTAssertEqual(parsedResult, StubModels.firstParsedResultStub)
+        XCTAssertEqual(parsedResult, StubModels.firstParsedResult)
     }
 
     func testError() {

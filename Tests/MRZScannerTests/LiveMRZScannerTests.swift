@@ -10,11 +10,10 @@ import XCTest
 
 final class LiveMRZScannerTests: XCTestCase {
     private var liveMRZScanner: LiveMRZScanner {
-        .init(textRecognizer: textRecognizer, validator: validator, parser: parser, tracker: tracker)
+        .init(textRecognizer: textRecognizer, validator: StubValidator(), parser: parser, tracker: tracker)
     }
     
     private var textRecognizer: StubTextRecognizer!
-    private var validator: StubValidator!
     private var parser: StubParser!
     private var tracker: StubTracker!
 
@@ -22,20 +21,18 @@ final class LiveMRZScannerTests: XCTestCase {
         super.setUp()
 
         textRecognizer = StubTextRecognizer()
-        validator = StubValidator()
         parser = StubParser()
         tracker = StubTracker()
     }
 
     func testSuccess() {
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        parser.parsedResult = StubModels.firstParsedResultStub
-        let trackedResult = (StubModels.firstParsedResultStub, 3)
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        parser.parsedResult = StubModels.firstParsedResult
         let expectation = XCTestExpectation()
         liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(scanningResult.result, trackedResult.0)
+                XCTAssertEqual(scanningResult.result, StubModels.firstParsedResult)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -46,8 +43,6 @@ final class LiveMRZScannerTests: XCTestCase {
 
     func testFailure() {
         textRecognizer.recognizeResult = .failure(StubError.stub)
-        parser.parsedResult = StubModels.firstParsedResultStub
-        tracker.isResultStable = false
         let expectation = XCTestExpectation()
         liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
             switch result {
@@ -62,8 +57,8 @@ final class LiveMRZScannerTests: XCTestCase {
     }
 
     func testTrackerFailure() {
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        parser.parsedResult = StubModels.firstParsedResultStub
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        parser.parsedResult = StubModels.firstParsedResult
         tracker.isResultStable = false
         let expectation = XCTestExpectation()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

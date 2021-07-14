@@ -10,17 +10,15 @@ import XCTest
 
 final class ScannerTests: XCTestCase {
     private var scanner: MRZScanner.Scanner {
-        .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
+        .init(textRecognizer: textRecognizer, validator: StubValidator(), parser: parser)
     }
     private var textRecognizer: StubTextRecognizer!
-    private var validator: StubValidator!
     private var parser: StubParser!
     private var tracker: StubTracker!
 
     override func setUp() {
         super.setUp()
         textRecognizer = StubTextRecognizer()
-        validator = StubValidator()
         parser = StubParser()
         tracker = StubTracker()
     }
@@ -29,14 +27,12 @@ final class ScannerTests: XCTestCase {
 
     func testaSingleComplete() {
         let expectation = XCTestExpectation()
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"],
-                                                   CGRect(x: 2, y: 4, width: 5, height: 3): ["wewewwe"]])
-        parser.parsedResult = StubModels.firstParsedResultStub
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        parser.parsedResult = StubModels.firstParsedResult
         scan(scanningType: .single) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
+                XCTAssertEqual(StubModels.firstParsedResult, scanningResult.result)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -62,8 +58,7 @@ final class ScannerTests: XCTestCase {
 
     func testSingleParserError() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             expectation.fulfill()
@@ -87,13 +82,12 @@ final class ScannerTests: XCTestCase {
 
     func testLiveComplete() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
-        parser.parsedResult = StubModels.firstParsedResultStub
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        parser.parsedResult = StubModels.firstParsedResult
         scan(scanningType: .live) { result in
             switch result {
             case .success(let scanningResult):
-                XCTAssertEqual(StubModels.firstParsedResultStub, scanningResult.result)
+                XCTAssertEqual(StubModels.firstParsedResult, scanningResult.result)
                 expectation.fulfill()
             case .failure:
                 XCTFail()
@@ -121,8 +115,7 @@ final class ScannerTests: XCTestCase {
 
     func testLiveParserError() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             expectation.fulfill()

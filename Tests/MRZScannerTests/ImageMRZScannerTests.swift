@@ -10,32 +10,44 @@ import XCTest
 
 final class ImageMRZScannerTests: XCTestCase {
     private var imageMRZScanner: ImageMRZScanner {
-        .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
+        .init(textRecognizer: textRecognizer, validator: StubValidator(), parser: parser)
     }
 
     private var textRecognizer: StubTextRecognizer!
-    private var validator: StubValidator!
     private var parser: StubParser!
 
     override func setUp() {
         super.setUp()
 
         textRecognizer = StubTextRecognizer()
-        validator = StubValidator()
         parser = StubParser()
     }
 
     func testSuccess() {
         let expectation = XCTestExpectation()
-        textRecognizer.recognizeResult = .success([CGRect(): ["asdasd"]])
-        validator.validatedResults = [.init(result: "asdasd", index: 0)]
-        parser.parsedResult = StubModels.firstParsedResultStub
+        textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
+        parser.parsedResult = StubModels.firstParsedResult
         imageMRZScanner.scan(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
             switch result {
-            case .success(_):
+            case .success:
                 expectation.fulfill()
             case .failure:
                 XCTFail()
+            }
+        }
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    func testFailure() {
+        let expectation = XCTestExpectation()
+        textRecognizer.recognizeResult = .failure(StubError.stub)
+        imageMRZScanner.scan(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+            switch result {
+            case .success:
+                XCTFail()
+            case .failure(let error):
+                XCTAssertTrue(error is StubError)
+                expectation.fulfill()
             }
         }
         wait(for: [expectation], timeout: 10.0)

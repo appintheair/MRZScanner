@@ -20,38 +20,38 @@ final class FrequencyTrackerTests: XCTestCase {
 
     func testOneResultFrequencyTimes() {
         for _ in 0 ..< frequency - 1 {
-            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
+            _ = tracker.isResultStable(StubModels.firstParsedResult)
         }
 
-        XCTAssertTrue(tracker.isResultStable(StubModels.firstParsedResultStub))
+        XCTAssertTrue(tracker.isResultStable(StubModels.firstParsedResult))
     }
 
     func testOneResultOneTime() {
-        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
+        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResult))
     }
 
     func testTwoResultsFrequencyTimes() {
-        _ = tracker.isResultStable(StubModels.firstParsedResultStub)
-        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
+        _ = tracker.isResultStable(StubModels.firstParsedResult)
+        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResult))
     }
 
     func testTwoResultFrequencyTimes() {
         for _ in 0 ..< 2  {
-            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
+            _ = tracker.isResultStable(StubModels.firstParsedResult)
         }
 
         for _ in 0 ..< 2 {
-            _ = tracker.isResultStable(StubModels.secondParsedResultStub)
+            _ = tracker.isResultStable(StubModels.secondParsedResult)
         }
 
         for _ in 0 ..< 3  {
-            _ = tracker.isResultStable(StubModels.firstParsedResultStub)
+            _ = tracker.isResultStable(StubModels.firstParsedResult)
         }
 
         for _ in 0 ..< 1  {
-            _ = tracker.isResultStable(StubModels.secondParsedResultStub)
+            _ = tracker.isResultStable(StubModels.secondParsedResult)
         }
 
-        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResultStub))
+        XCTAssertFalse(tracker.isResultStable(StubModels.firstParsedResult))
     }
 }

@@ -17,7 +17,7 @@ struct StubModels {
         return formatter
     }()
 
-    static let firstParsedResultStub = ParsedResult(
+    static let firstParsedResult = ParsedResult(
         format: .td3,
         documentType: .passport,
         countryCode: "UTO",
@@ -32,7 +32,7 @@ struct StubModels {
         optionalData2: nil
     )
 
-    static let secondParsedResultStub = ParsedResult(
+    static let secondParsedResult = ParsedResult(
         format: .td2,
         documentType: .id,
         countryCode: "",
@@ -46,6 +46,8 @@ struct StubModels {
         optionalData: nil,
         optionalData2: nil
     )
+
+    static let textRecognizerResults = [CGRect(): [""]]
 
     static var sampleBufferStub: CVPixelBuffer {
         var pixelBuffer : CVPixelBuffer? = nil

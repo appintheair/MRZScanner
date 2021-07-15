@@ -5,7 +5,7 @@ Library for scanning documents via [MRZ](https://en.wikipedia.org/wiki/Machine-r
 ## Example
 The example project is located inside the [Example](https://github.com/appintheair/MRZScanner/tree/develop/Example) folder. 
 
-![gif](https://raw.githubusercontent.com/appintheair/MRZScanner/develop/docs/img/example.png)
+![gif](https://github.com/appintheair/MRZScanner/blob/develop/docs/img/example.gif)
 
 *To run it, you need a device with the [minimum required OS version](https://github.com/appintheair/MRZScanner#requirements).*
 

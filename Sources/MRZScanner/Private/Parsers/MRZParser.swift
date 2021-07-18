@@ -12,6 +12,6 @@ public typealias ParsedResult = MRZResult
 
 struct MRZLineParser: Parser {
     func parse(lines: [String]) -> ParsedResult? {
-        MRZParser().parse(mrzLines: lines)
+        MRZParser(isOCRCorrectionEnabled: true).parse(mrzLines: lines)
     }
 }

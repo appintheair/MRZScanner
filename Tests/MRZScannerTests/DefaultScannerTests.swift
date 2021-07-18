@@ -1,5 +1,5 @@
 //
-//  ScannerTests.swift
+//  DefaultScannerTests.swift
 //  
 //
 //  Created by Roman Mazeev on 13.07.2021.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import MRZScanner
 
-final class ScannerTests: XCTestCase {
+final class DefaultScannerTests: XCTestCase {
     private var scanner: DefaultScanner {
         .init(textRecognizer: textRecognizer, validator: validator, parser: parser)
     }

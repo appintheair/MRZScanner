@@ -1,4 +1,4 @@
-[![Swift](https://github.com/appintheair/MRZScanner/actions/workflows/swift.yml/badge.svg)](https://github.com/appintheair/MRZScanner/actions/workflows/swift.yml)
+[![Build and test](https://github.com/appintheair/MRZScanner/actions/workflows/Build%20and%20test.yml/badge.svg?branch=develop)](https://github.com/appintheair/MRZScanner/actions/workflows/Build%20and%20test.yml)
 [![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://github.com/appintheair/MRZParser/blob/develop/Package.swift)
 
 # MRZScanner

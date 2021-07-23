@@ -7,7 +7,9 @@
 
 typealias ValidatedResults = [ValidatedResult]
 struct ValidatedResult {
+    /// MRZLine
     let result: String
+    /// MRZLine bouningRect index
     let index: Int
 }
 

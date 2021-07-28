@@ -11,7 +11,7 @@ typealias TextRecognizerResults = [CGRect : [String]]
 
 protocol TextRecognizer {
     func recognize(
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,

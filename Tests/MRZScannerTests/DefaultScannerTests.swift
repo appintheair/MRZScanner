@@ -145,7 +145,7 @@ final class DefaultScannerTests: XCTestCase {
     ) -> Void) {
         scanner.scan(
             scanningType: scanningType,
-            pixelBuffer: StubModels.sampleBufferStub,
+            scanningImage: .pixelBuffer(StubModels.sampleBufferStub),
             orientation: .up,
             regionOfInterest: nil,
             minimumTextHeight: nil,

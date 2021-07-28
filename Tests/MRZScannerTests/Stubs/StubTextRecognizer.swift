@@ -11,7 +11,7 @@ import CoreImage
 struct StubTextRecognizer: TextRecognizer {
     var recognizeResult: Result<TextRecognizerResults, Error>?
     func recognize(
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,

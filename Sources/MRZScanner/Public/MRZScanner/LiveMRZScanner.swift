@@ -33,7 +33,7 @@ public struct LiveMRZScanner: ScannerService, LiveScanner {
     }
 
     public func scanFrame(
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
         minimumTextHeight: Float? = nil,
@@ -42,7 +42,7 @@ public struct LiveMRZScanner: ScannerService, LiveScanner {
     ) {
         scanner.scan(
             scanningType: .live,
-            pixelBuffer: pixelBuffer,
+            scanningImage: scanningImage,
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,

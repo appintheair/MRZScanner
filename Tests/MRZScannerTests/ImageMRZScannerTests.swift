@@ -27,7 +27,7 @@ final class ImageMRZScannerTests: XCTestCase {
         let expectation = XCTestExpectation()
         textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
         parser.parsedResult = StubModels.firstParsedResult
-        imageMRZScanner.scan(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+        imageMRZScanner.scan(scanningImage: .pixelBuffer(StubModels.sampleBufferStub), orientation: .up) { result in
             switch result {
             case .success:
                 expectation.fulfill()

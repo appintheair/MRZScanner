@@ -9,7 +9,7 @@ import Vision
 
 struct VisionTextRecognizer: TextRecognizer {
     func recognize(
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,
@@ -41,9 +41,14 @@ struct VisionTextRecognizer: TextRecognizer {
         request.recognitionLevel = recognitionLevel == .fast ? .fast : .accurate
         request.usesLanguageCorrection = false
 
-        let imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer,
-                                                        orientation: orientation,
-                                                        options: [:])
+        let imageRequestHandler: VNImageRequestHandler
+        switch scanningImage {
+        case .cgImage(let image):
+            imageRequestHandler = VNImageRequestHandler(cgImage: image, orientation: orientation, options: [:])
+        case .pixelBuffer(let pixelBuffer):
+            imageRequestHandler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: orientation, options: [:])
+        }
+
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 try imageRequestHandler.perform([request])

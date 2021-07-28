@@ -29,7 +29,7 @@ final class LiveMRZScannerTests: XCTestCase {
         textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
         parser.parsedResult = StubModels.firstParsedResult
         let expectation = XCTestExpectation()
-        liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+        liveMRZScanner.scanFrame(scanningImage: .pixelBuffer(StubModels.sampleBufferStub), orientation: .up) { result in
             switch result {
             case .success(let scanningResult):
                 XCTAssertEqual(scanningResult.result, StubModels.firstParsedResult)
@@ -44,7 +44,7 @@ final class LiveMRZScannerTests: XCTestCase {
     func testFailure() {
         textRecognizer.recognizeResult = .failure(StubError.stub)
         let expectation = XCTestExpectation()
-        liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+        liveMRZScanner.scanFrame(scanningImage: .pixelBuffer(StubModels.sampleBufferStub), orientation: .up) { result in
             switch result {
             case .success:
                 XCTFail()
@@ -64,7 +64,7 @@ final class LiveMRZScannerTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             expectation.fulfill()
         }
-        liveMRZScanner.scanFrame(pixelBuffer: StubModels.sampleBufferStub, orientation: .up) { result in
+        liveMRZScanner.scanFrame(scanningImage: .pixelBuffer(StubModels.sampleBufferStub), orientation: .up) { result in
             switch result {
             case .success:
                 XCTFail()

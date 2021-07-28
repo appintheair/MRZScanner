@@ -27,7 +27,7 @@ public struct ImageMRZScanner: ScannerService {
     }
 
     public func scan(
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect? = nil,
         minimumTextHeight: Float? = nil,
@@ -36,7 +36,7 @@ public struct ImageMRZScanner: ScannerService {
     ) {
         scanner.scan(
             scanningType: .single,
-            pixelBuffer: pixelBuffer,
+            scanningImage: scanningImage,
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,

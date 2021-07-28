@@ -29,7 +29,7 @@ struct DefaultScanner: Scanner {
 
     func scan(
         scanningType: ScanningType,
-        pixelBuffer: CVPixelBuffer,
+        scanningImage: ScanningImage,
         orientation: CGImagePropertyOrientation,
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,
@@ -38,7 +38,7 @@ struct DefaultScanner: Scanner {
         completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
     ) {
         textRecognizer.recognize(
-            pixelBuffer: pixelBuffer,
+            scanningImage: scanningImage,
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,

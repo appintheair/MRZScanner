@@ -48,10 +48,10 @@ public final class LiveMRZScanner: ScannerService, LiveScanner {
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: .fast,
             foundBoundingRectsHandler: foundBoundingRectsHandler,
-            completionHandler: { [weak self] result in
+            completionHandler: { result in
                 switch result {
                 case .success(let scanningResult):
-                    guard let self = self, self.tracker.isResultStable(scanningResult.result) else { return }
+                    guard self.tracker.isResultStable(scanningResult.result) else { return }
 
                     completionHandler(
                         .success(.init(

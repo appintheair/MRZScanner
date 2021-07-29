@@ -12,7 +12,7 @@ final class LiveMRZScannerTests: XCTestCase {
     private var liveMRZScanner: LiveMRZScanner {
         .init(textRecognizer: textRecognizer, validator: StubValidator(), parser: parser, tracker: tracker)
     }
-    
+
     private var textRecognizer: StubTextRecognizer!
     private var parser: StubParser!
     private var tracker: StubTracker!
@@ -28,6 +28,7 @@ final class LiveMRZScannerTests: XCTestCase {
     func testSuccess() {
         textRecognizer.recognizeResult = .success(StubModels.textRecognizerResults)
         parser.parsedResult = StubModels.firstParsedResult
+        tracker.isResultStable = true
         let expectation = XCTestExpectation()
         liveMRZScanner.scanFrame(scanningImage: .pixelBuffer(StubModels.sampleBufferStub), orientation: .up) { result in
             switch result {

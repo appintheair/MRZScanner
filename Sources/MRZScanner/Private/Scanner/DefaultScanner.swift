@@ -17,9 +17,9 @@ struct DefaultScanner: Scanner {
         case single
     }
 
-    var textRecognizer: TextRecognizer
-    var validator: Validator
-    var parser: Parser
+    let textRecognizer: TextRecognizer
+    let validator: Validator
+    let parser: Parser
 
     init(textRecognizer: TextRecognizer, validator: Validator, parser: Parser) {
         self.textRecognizer = textRecognizer

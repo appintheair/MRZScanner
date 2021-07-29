@@ -7,9 +7,9 @@
 
 import CoreImage
 
-public struct LiveMRZScanner: ScannerService, LiveScanner {
-    var scanner: DefaultScanner
-    var tracker: Tracker
+public final class LiveMRZScanner: ScannerService, LiveScanner {
+    let scanner: DefaultScanner
+    let tracker: Tracker
 
     /// - Parameter frequency: Number of times the result was encountered
     public init(frequency: Int = 2) {
@@ -48,10 +48,10 @@ public struct LiveMRZScanner: ScannerService, LiveScanner {
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: .fast,
             foundBoundingRectsHandler: foundBoundingRectsHandler,
-            completionHandler: { result in
+            completionHandler: { [weak self] result in
                 switch result {
                 case .success(let scanningResult):
-                    guard tracker.isResultStable(scanningResult.result) else { return }
+                    guard let self = self, self.tracker.isResultStable(scanningResult.result) else { return }
 
                     completionHandler(
                         .success(.init(

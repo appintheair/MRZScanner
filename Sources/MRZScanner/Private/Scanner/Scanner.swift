@@ -8,7 +8,7 @@
 import CoreImage
 
 protocol Scanner {
-    var textRecognizer: TextRecognizer { get set }
-    var validator: Validator { get set }
-    var parser: Parser { get set }
+    var textRecognizer: TextRecognizer { get }
+    var validator: Validator { get }
+    var parser: Parser { get }
 }

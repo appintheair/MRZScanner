@@ -6,5 +6,5 @@
 //
 
 protocol ScannerService {
-    var scanner: DefaultScanner { get set }
+    var scanner: DefaultScanner { get }
 }

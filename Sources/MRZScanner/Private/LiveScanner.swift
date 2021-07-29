@@ -6,5 +6,5 @@
 //
 
 protocol LiveScanner {
-    var tracker: Tracker { get set }
+    var tracker: Tracker { get }
 }

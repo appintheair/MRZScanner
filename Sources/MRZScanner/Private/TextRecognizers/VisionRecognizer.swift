@@ -14,7 +14,7 @@ struct VisionTextRecognizer: TextRecognizer {
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,
         recognitionLevel: RecognitionLevel,
-        completionHandler: @escaping (Result<TextRecognizerResults, Error>) -> Void
+        completionHandler: @escaping (Result<[TextRecognizerResult], Error>) -> Void
     ) {
         let request = VNRecognizeTextRequest { request, error in
             guard error == nil else {
@@ -24,9 +24,14 @@ struct VisionTextRecognizer: TextRecognizer {
 
             let visionResults = request.results as! [VNRecognizedTextObservation]
 
-            var result: [CGRect : [String]] = [:]
+            var result: [TextRecognizerResult] = []
             for visionResult in visionResults {
-                result[visionResult.boundingBox] = visionResult.topCandidates(10).map { $0.string }
+                result.append(
+                    .init(
+                        results: visionResult.topCandidates(10).map { $0.string },
+                        boundingRect: visionResult.boundingBox
+                    )
+                )
             }
 
             completionHandler(.success(result))

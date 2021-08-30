@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1300"
+   LastUpgradeVersion = "1250"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DocumentScanner"
-               BuildableName = "DocumentScanner"
-               BlueprintName = "DocumentScanner"
+               BlueprintIdentifier = "MRZScanner"
+               BuildableName = "MRZScanner"
+               BlueprintName = "MRZScanner"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DocumentScannerTests"
-               BuildableName = "DocumentScannerTests"
-               BlueprintName = "DocumentScannerTests"
+               BlueprintIdentifier = "MRZScannerTests"
+               BuildableName = "MRZScannerTests"
+               BlueprintName = "MRZScannerTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,16 +40,15 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DocumentScannerTests"
-               BuildableName = "DocumentScannerTests"
-               BlueprintName = "DocumentScannerTests"
+               BlueprintIdentifier = "MRZScannerTests"
+               BuildableName = "MRZScannerTests"
+               BlueprintName = "MRZScannerTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -75,9 +74,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DocumentScanner"
-            BuildableName = "DocumentScanner"
-            BlueprintName = "DocumentScanner"
+            BlueprintIdentifier = "MRZScanner"
+            BuildableName = "MRZScanner"
+            BlueprintName = "MRZScanner"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>

@@ -47,7 +47,7 @@ struct StubModels {
         optionalData2: nil
     )
 
-    static let textRecognizerResults = [CGRect(): [""]]
+    static let textRecognizerResults: [TextRecognizerResult] = [.init(results: [], boundingRect: .zero)]
     static let validatedResults: [ValidatedResult] = [.init(result: "", index: 0)]
 
     static var sampleBufferStub: CVPixelBuffer {

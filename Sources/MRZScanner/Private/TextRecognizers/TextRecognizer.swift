@@ -7,7 +7,10 @@
 
 import CoreImage
 
-typealias TextRecognizerResults = [CGRect : [String]]
+struct TextRecognizerResult {
+    let results: [String]
+    let boundingRect: CGRect
+}
 
 protocol TextRecognizer {
     func recognize(
@@ -16,6 +19,6 @@ protocol TextRecognizer {
         regionOfInterest: CGRect?,
         minimumTextHeight: Float?,
         recognitionLevel: RecognitionLevel,
-        completionHandler: @escaping (Result<TextRecognizerResults, Error>) -> Void
+        completionHandler: @escaping (Result<[TextRecognizerResult], Error>) -> Void
     )
 }

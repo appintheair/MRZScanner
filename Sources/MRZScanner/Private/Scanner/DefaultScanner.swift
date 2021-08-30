@@ -48,11 +48,11 @@ struct DefaultScanner: Scanner {
             case .success(let results):
                 if scanningType == .live {
                     DispatchQueue.main.async {
-                        foundBoundingRectsHandler?(results.map { $0.key })
+                        foundBoundingRectsHandler?(results.map { $0.boundingRect })
                     }
                 }
 
-                let validatedResult = validator.getValidatedResults(from: results.map { $0.value })
+                let validatedResult = validator.getValidatedResults(from: results.map { $0.results })
                 guard let parsedResult = parser.parse(lines: validatedResult.map { $0.result }) else {
                     if scanningType == .single {
                         DispatchQueue.main.async {
@@ -82,10 +82,10 @@ struct DefaultScanner: Scanner {
     }
 
     private func getScannedBoundingRects(
-        from results: TextRecognizerResults,
+        from results: [TextRecognizerResult],
         validLines: ValidatedResults
     ) -> ScannedBoundingRects {
-        let allBoundingRects = results.map { $0.key }
+        let allBoundingRects = results.map { $0.boundingRect }
         let validRectIndexes = validLines.map { $0.index }
         let validRects = allBoundingRects.enumerated()
             .filter { validRectIndexes.contains($0.offset) }

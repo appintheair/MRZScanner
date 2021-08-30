@@ -24,7 +24,7 @@ struct VisionTextRecognizer: TextRecognizer {
 
             let visionResults = request.results as! [VNRecognizedTextObservation]
 
-            var result: [TextRecognizerResult] = visionResults.map {
+            let result: [TextRecognizerResult] = visionResults.map {
                 .init(results: $0.topCandidates(10).map { $0.string }, boundingRect: $0.boundingBox)
             }
 

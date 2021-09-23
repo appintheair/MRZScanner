@@ -13,10 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build
-      run: swift build -v
-    - name: Run tests
+    - name: Build and test
       run: swift test -v --enable-code-coverage
-    - name: Swift Coverage Report
-      uses: maxep/spm-lcov-action@0.3.1
-
+    - name: Test coverage
+      uses: maxep/spm-lcov-action@0.3.0
+      with:
+        output-file: ./coverage/lcov.info
+    - name: Codecov
+      uses: codecov/codecov-action@v2.0.1

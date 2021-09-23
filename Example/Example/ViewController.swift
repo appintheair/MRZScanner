@@ -397,7 +397,7 @@ extension ViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     ) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer), scanningIsEnabled {
             scanner.scanFrame(
-                pixelBuffer: pixelBuffer,
+                scanningImage: .pixelBuffer(pixelBuffer),
                 orientation: textOrientation,
                 regionOfInterest: regionOfInterest,
                 minimumTextHeight: 0.1,

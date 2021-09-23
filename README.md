@@ -1,5 +1,6 @@
 [![Build and test](https://github.com/appintheair/MRZScanner/actions/workflows/Build%20and%20test.yml/badge.svg?branch=develop)](https://github.com/appintheair/MRZScanner/actions/workflows/Build%20and%20test.yml)
 [![SPM](https://img.shields.io/badge/SPM-compatible-brightgreen.svg)](https://github.com/appintheair/MRZParser/blob/develop/Package.swift)
+[![codecov](https://codecov.io/gh/appintheair/MRZScanner/branch/develop/graph/badge.svg?token=BAvvoujCum)](https://codecov.io/gh/appintheair/MRZScanner)
 
 # MRZScanner
 Library for scanning documents via [MRZ](https://en.wikipedia.org/wiki/Machine-readable_passport) using [ Vision API](https://developer.apple.com/documentation/vision/vnrecognizetextrequest).

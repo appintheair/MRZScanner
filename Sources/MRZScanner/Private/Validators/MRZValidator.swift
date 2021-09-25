@@ -17,7 +17,7 @@ struct MRZValidator: Validator {
                 guard validLines.count < validMRZCode.linesCount else { break }
                 let spaceFreeLines = lines.lazy.map { $0.filter { !$0.isWhitespace } }
                 guard let mostLikelyLine = spaceFreeLines.first(where: {
-                    $0.count == validMRZCode.lineLenth
+                    $0.count == validMRZCode.lineLength
                 }) else { continue }
                 validLines.append(.init(result: mostLikelyLine, index: index))
             }

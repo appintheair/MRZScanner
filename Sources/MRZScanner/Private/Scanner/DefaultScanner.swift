@@ -46,10 +46,8 @@ struct DefaultScanner: Scanner {
         ) {
             switch $0 {
             case .success(let results):
-                if scanningType == .live {
-                    DispatchQueue.main.async {
-                        foundBoundingRectsHandler?(results.map { $0.boundingRect })
-                    }
+                DispatchQueue.main.async {
+                    foundBoundingRectsHandler?(results.map { $0.boundingRect })
                 }
 
                 let validatedResult = validator.getValidatedResults(from: results.map { $0.results })

@@ -42,7 +42,7 @@ struct DefaultScanner: Scanner {
             orientation: orientation,
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
-            recognitionLevel: .fast
+            recognitionLevel: recognitionLevel
         ) {
             switch $0 {
             case .success(let results):

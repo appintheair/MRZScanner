@@ -85,16 +85,19 @@ struct DefaultScanner: Scanner {
         from results: [TextRecognizerResult],
         validLines: ValidatedResults
     ) -> ScannedBoundingRects {
-        let allBoundingRects = results.map { $0.boundingRect }
-        let validRectIndexes = validLines.map { $0.index }
-        let validRects = allBoundingRects.enumerated()
-            .filter { validRectIndexes.contains($0.offset) }
-            .map { $0.element }
-        let invalidRects = allBoundingRects.enumerated()
-            .filter { !validRectIndexes.contains($0.offset) }
-            .map { $0.element }
+        let allBoundingRects = results.map(\.boundingRect)
+        let validRectIndexes = Set(validLines.map(\.index))
 
-        return (validRects, invalidRects)
+        var scannedBoundingRects: ScannedBoundingRects = ([], [])
+        allBoundingRects.enumerated().forEach {
+            if validRectIndexes.contains($0.offset) {
+                scannedBoundingRects.valid.append($0.element)
+            } else {
+                scannedBoundingRects.invalid.append($0.element)
+            }
+        }
+
+        return scannedBoundingRects
     }
 }
 

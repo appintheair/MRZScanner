@@ -28,7 +28,7 @@ dependencies: [
 *The library has an SPM [dependency](https://github.com/appintheair/MRZParser) for MRZ code parsing.*
 
 ## Usage
-Currently there are 2 scanners available, `ImageMRZScanner` and `LiveMRZScanner`.
+Currently there are 2 scanners available, `LiveMRZScanner` and `ImageMRZScanner`.
 The first is used to scan the MRZ code on a single image, and the second in real-time scanning.
 
 To scan, you need to call the `scanFrame` / `scan` method of the scanner.

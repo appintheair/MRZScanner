@@ -8,7 +8,7 @@
 import CoreImage
 
 public struct ImageMRZScanner: ScannerService {
-    var scanner: DefaultScanner
+    let scanner: DefaultScanner
 
     public init() {
         scanner = DefaultScanner(
@@ -32,6 +32,7 @@ public struct ImageMRZScanner: ScannerService {
         regionOfInterest: CGRect? = nil,
         minimumTextHeight: Float? = nil,
         recognitionLevel: RecognitionLevel = .accurate,
+        foundBoundingRectsHandler: (([CGRect]) -> Void)? = nil,
         completionHandler: @escaping (Result<DocumentScanningResult<ParsedResult>, Error>) -> Void
     ) {
         scanner.scan(
@@ -41,6 +42,7 @@ public struct ImageMRZScanner: ScannerService {
             regionOfInterest: regionOfInterest,
             minimumTextHeight: minimumTextHeight,
             recognitionLevel: recognitionLevel,
+            foundBoundingRectsHandler: foundBoundingRectsHandler,
             completionHandler: completionHandler
         )
     }

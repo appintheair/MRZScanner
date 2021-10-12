@@ -9,7 +9,7 @@ typealias ValidatedResults = [ValidatedResult]
 struct ValidatedResult {
     /// MRZLine
     let result: String
-    /// MRZLine bouningRect index
+    /// MRZLine boundingRect index
     let index: Int
 }
 

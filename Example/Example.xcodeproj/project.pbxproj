@@ -7,16 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		303AE70C2715847400F4F4A5 /* MRZScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 303AE70B2715847400F4F4A5 /* MRZScanner */; };
 		307E0392268A21AF0075EB2E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E0391268A21AF0075EB2E /* AppDelegate.swift */; };
 		307E0396268A21AF0075EB2E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E0395268A21AF0075EB2E /* ViewController.swift */; };
 		307E0399268A21AF0075EB2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 307E0397268A21AF0075EB2E /* Main.storyboard */; };
 		307E039B268A21B10075EB2E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 307E039A268A21B10075EB2E /* Assets.xcassets */; };
 		307E039E268A21B10075EB2E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 307E039C268A21B10075EB2E /* LaunchScreen.storyboard */; };
 		307E03AA268A24050075EB2E /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 307E03A9268A24050075EB2E /* PreviewView.swift */; };
-		30CDDEFE268B75DB00D4DF8D /* MRZScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 30CDDEFD268B75DB00D4DF8D /* MRZScanner */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		303AE7072715845100F4F4A5 /* MRZScanner */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MRZScanner; path = ..; sourceTree = "<group>"; };
 		307E038E268A21AF0075EB2E /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		307E0391268A21AF0075EB2E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		307E0395268A21AF0075EB2E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -32,18 +33,35 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				30CDDEFE268B75DB00D4DF8D /* MRZScanner in Frameworks */,
+				303AE70C2715847400F4F4A5 /* MRZScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		303AE7062715845100F4F4A5 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				303AE7072715845100F4F4A5 /* MRZScanner */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		303AE7082715846500F4F4A5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		307E0385268A21AF0075EB2E = {
 			isa = PBXGroup;
 			children = (
+				303AE7062715845100F4F4A5 /* Packages */,
 				307E0390268A21AF0075EB2E /* Example */,
 				307E038F268A21AF0075EB2E /* Products */,
+				303AE7082715846500F4F4A5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,7 +104,7 @@
 			);
 			name = Example;
 			packageProductDependencies = (
-				30CDDEFD268B75DB00D4DF8D /* MRZScanner */,
+				303AE70B2715847400F4F4A5 /* MRZScanner */,
 			);
 			productName = Example;
 			productReference = 307E038E268A21AF0075EB2E /* Example.app */;
@@ -116,7 +134,6 @@
 			);
 			mainGroup = 307E0385268A21AF0075EB2E;
 			packageReferences = (
-				30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */,
 			);
 			productRefGroup = 307E038F268A21AF0075EB2E /* Products */;
 			projectDirPath = "";
@@ -352,21 +369,9 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/appintheair/MRZScanner";
-			requirement = {
-				branch = develop;
-				kind = branch;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		30CDDEFD268B75DB00D4DF8D /* MRZScanner */ = {
+		303AE70B2715847400F4F4A5 /* MRZScanner */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 30CDDEFC268B75DB00D4DF8D /* XCRemoteSwiftPackageReference "MRZScanner" */;
 			productName = MRZScanner;
 		};
 /* End XCSwiftPackageProductDependency section */
